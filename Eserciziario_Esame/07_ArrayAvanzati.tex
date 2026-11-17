@@ -1,0 +1,62 @@
+\section{Capitoli 16-17: Array Avanzati e Destructuring}
+
+\begin{dizionario}{Destructuring}
+\textbf{Sintassi:} `const {a, b} = obj` oppure `const [x, y] = arr`.
+Permette di estrarre valori in modo conciso.
+\end{dizionario}
+
+\begin{esercizio}{Es. 33: Swap Variabili (Destructuring)}
+\textbf{TRACCIA:} Scambiare i valori di due variabili `a` e `b` senza usare una variabile temporanea `temp`, usando il destructuring.
+\end{esercizio}
+
+\begin{jsbox}
+let a = 1, b = 2;
+[a, b] = [b, a];
+console.log(a, b); // 2, 1
+\end{jsbox}
+
+\begin{esercizio}{Es. 34: Somma Variadica (Rest Operator)}
+\textbf{TRACCIA:} Scrivere una funzione `sommaTutto(...numeri)` che accetta un numero arbitrario di argomenti e li somma tutti.
+\end{esercizio}
+
+\begin{jsbox}
+function sommaTutto(...numeri) {
+    // 'numeri' è un vero array [n1, n2, ...]
+    return numeri.reduce((acc, n) => acc + n, 0);
+}
+console.log(sommaTutto(1, 2, 3, 4)); // 10
+\end{jsbox}
+
+\begin{esercizio}{Es. 35: Merge di Oggetti (Spread)}
+\textbf{TRACCIA:} Dati due oggetti `defaultConfig` e `userConfig`, creare un `finalConfig` che ha tutte le proprietà, ma `userConfig` vince in caso di conflitto.
+\end{esercizio}
+
+\begin{jsbox}
+const defaultConfig = { theme: "light", debug: false };
+const userConfig = { theme: "dark" };
+
+const finalConfig = { ...defaultConfig, ...userConfig };
+// { theme: "dark", debug: false }
+\end{jsbox}
+
+\begin{esercizio}{Es. 46: Rotazione Matrice 90 Gradi}
+\textbf{TRACCIA:} Ruotare una matrice $N \times N$ di 90 gradi in senso orario, \textbf{in-place} (modificando la matrice originale).
+\end{esercizio}
+
+\begin{jsbox}
+function rotate(matrix) {
+    let n = matrix.length;
+    
+    // 1. Trasposta
+    for (let i = 0; i < n; i++) {
+        for (let j = i; j < n; j++) {
+            [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]];
+        }
+    }
+    
+    // 2. Inverti ogni riga
+    for (let i = 0; i < n; i++) {
+        matrix[i].reverse();
+    }
+}
+\end{jsbox}

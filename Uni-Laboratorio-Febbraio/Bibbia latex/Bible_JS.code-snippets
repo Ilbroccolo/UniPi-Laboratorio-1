@@ -1,0 +1,421 @@
+{
+	// Place your snippets for javascript here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"Console Log": {
+		"prefix": "clg",
+		"body": [
+			"console.log($1);"
+		],
+		"description": "Console log standard"
+	},
+	"Console Error": {
+		"prefix": "cer",
+		"body": [
+			"console.error($1);"
+		],
+		"description": "Console error rosso"
+	},
+	"Console Warning": {
+		"prefix": "cwa",
+		"body": [
+			"console.warn($1);"
+		],
+		"description": "Console warning giallo"
+	},
+	"Console Table": {
+		"prefix": "cta",
+		"body": [
+			"console.table($1);"
+		],
+		"description": "Visualizza array/oggetti come tabella"
+	},
+	"Console Time Start": {
+		"prefix": "ctime",
+		"body": [
+			"console.time('${1:label}');"
+		],
+		"description": "Avvia timer"
+	},
+	"Console Time End": {
+		"prefix": "ctimeEnd",
+		"body": [
+			"console.timeEnd('${1:label}');"
+		],
+		"description": "Ferma timer e stampa"
+	},
+	"Let Variable": {
+		"prefix": "let",
+		"body": [
+			"let ${1:name} = ${2:value};"
+		],
+		"description": "Dichiarazione variabile let"
+	},
+	"Const Variable": {
+		"prefix": "const",
+		"body": [
+			"const ${1:name} = ${2:value};"
+		],
+		"description": "Dichiarazione costante"
+	},
+	"Destructuring Object": {
+		"prefix": "dest",
+		"body": [
+			"const { ${1:prop} } = ${2:object};"
+		],
+		"description": "Destructuring Oggetto"
+	},
+	"Destructuring Array": {
+		"prefix": "desta",
+		"body": [
+			"const [ ${1:first}, ${2:second} ] = ${3:array};"
+		],
+		"description": "Destructuring Array"
+	},
+	"Function Named": {
+		"prefix": "fn",
+		"body": [
+			"function ${1:name}(${2:params}) {",
+			"\t$0",
+			"}"
+		],
+		"description": "Funzione nominata"
+	},
+	"Arrow Function": {
+		"prefix": "afn",
+		"body": [
+			"const ${1:name} = (${2:params}) => {",
+			"\t$0",
+			"};"
+		],
+		"description": "Arrow Function estesa"
+	},
+	"Arrow Function Short": {
+		"prefix": "afns",
+		"body": [
+			"const ${1:name} = (${2:params}) => ${3:value};"
+		],
+		"description": "Arrow Function concisa"
+	},
+	"IIFE": {
+		"prefix": "iife",
+		"body": [
+			"(function() {",
+			"\t$0",
+			"})();"
+		],
+		"description": "Immediately Invoked Function Expression"
+	},
+	"For Loop": {
+		"prefix": "for",
+		"body": [
+			"for (let ${1:i} = 0; ${1:i} < ${2:array}.length; ${1:i}++) {",
+			"\tconst ${3:element} = ${2:array}[${1:i}];",
+			"\t$0",
+			"}"
+		],
+		"description": "Ciclo For classico"
+	},
+	"For Reverse": {
+		"prefix": "forr",
+		"body": [
+			"for (let ${1:i} = ${2:array}.length - 1; ${1:i} >= 0; ${1:i}--) {",
+			"\tconst ${3:element} = ${2:array}[${1:i}];",
+			"\t$0",
+			"}"
+		],
+		"description": "Ciclo For inverso"
+	},
+	"For Of": {
+		"prefix": "forof",
+		"body": [
+			"for (const ${1:element} of ${2:iterable}) {",
+			"\t$0",
+			"}"
+		],
+		"description": "Ciclo su valori (Array/String/Map)"
+	},
+	"For In": {
+		"prefix": "forin",
+		"body": [
+			"for (const ${1:key} in ${2:object}) {",
+			"\tif (Object.hasOwnProperty.call(${2:object}, ${1:key})) {",
+			"\t\tconst ${3:element} = ${2:object}[${1:key}];",
+			"\t\t$0",
+			"\t}",
+			"}"
+		],
+		"description": "Ciclo su chiavi (Oggetti)"
+	},
+	"Map": {
+		"prefix": "map",
+		"body": [
+			"const ${1:newArray} = ${2:array}.map((${3:item}) => {",
+			"\treturn ${4:transform};",
+			"});"
+		],
+		"description": "Array Map"
+	},
+	"Filter": {
+		"prefix": "filter",
+		"body": [
+			"const ${1:filtered} = ${2:array}.filter((${3:item}) => {",
+			"\treturn ${4:condition};",
+			"});"
+		],
+		"description": "Array Filter"
+	},
+	"Reduce": {
+		"prefix": "reduce",
+		"body": [
+			"const ${1:sum} = ${2:array}.reduce((acc, ${3:curr}) => {",
+			"\treturn acc + ${3:curr};",
+			"}, ${4:initialValue});"
+		],
+		"description": "Array Reduce"
+	},
+	"Class Definition": {
+		"prefix": "class",
+		"body": [
+			"class ${1:ClassName} {",
+			"\tconstructor(${2:params}) {",
+			"\t\tthis.${3:prop} = ${2:params};",
+			"\t}",
+			"",
+			"\t${4:methodName}() {",
+			"\t\t$0",
+			"\t}",
+			"}"
+		],
+		"description": "Definizione Classe ES6"
+	},
+	"Promise": {
+		"prefix": "prom",
+		"body": [
+			"new Promise((resolve, reject) => {",
+			"\t$0",
+			"});"
+		],
+		"description": "Nuova Promise"
+	},
+	"Fetch": {
+		"prefix": "fetch",
+		"body": [
+			"fetch('${1:url}')",
+			"\t.then(res => res.json())",
+			"\t.then(data => console.log(data))",
+			"\t.catch(err => console.error(err));"
+		],
+		"description": "Fetch API Basic"
+	},
+	"Async Function": {
+		"prefix": "async",
+		"body": [
+			"async function ${1:name}(${2:params}) {",
+			"\ttry {",
+			"\t\tconst res = await ${3:promise};",
+			"\t\t$0",
+			"\t} catch (error) {",
+			"\t\tconsole.error(error);",
+			"\t}",
+			"}"
+		],
+		"description": "Funzione Async/Await con Try-Catch"
+	},
+	"Query Selector": {
+		"prefix": "qs",
+		"body": [
+			"const ${1:el} = document.querySelector('${2:selector}');"
+		],
+		"description": "DOM Query Selector"
+	},
+	"Add Event Listener": {
+		"prefix": "ael",
+		"body": [
+			"${1:element}.addEventListener('${2:click}', (e) => {",
+			"\t$0",
+			"});"
+		],
+		"description": "DOM Event Listener"
+	},
+	"Clone Object": {
+		"prefix": "clone",
+		"body": [
+			"const ${1:clone} = JSON.parse(JSON.stringify(${2:original}));"
+		],
+		"description": "Deep Clone (JSON hack)"
+	},
+	"Recursive Function": {
+		"prefix": "rec",
+		"body": [
+			"function ${1:funzioneRicorsiva}(n) {",
+			"\t// 1. Caso Base: mi fermo",
+			"\tif (n <= ${2:0}) return ${3:val};",
+			"\t",
+			"\t// 2. Passo Ricorsivo: passo il problema ridotto",
+			"\treturn ${4:operazione} + ${1:funzioneRicorsiva}(n - 1);",
+			"}"
+		],
+		"description": "Boilerplate Funzione Ricorsiva"
+	},
+	"Fibonacci Recursive": {
+		"prefix": "fib",
+		"body": [
+			"function fib(n) {",
+			"\tif (n <= 1) return n; // 0 o 1",
+			"\treturn fib(n - 1) + fib(n - 2);",
+			"}"
+		],
+		"description": "Fibonacci Ricorsivo"
+	},
+	"Binary Tree Node": {
+		"prefix": "treeNode",
+		"body": [
+			"// Nodo semplice per albero binario",
+			"const ${1:nodo} = { val: ${2:valore}, sx: null, dx: null };"
+		],
+		"description": "Nodo Albero Binario Semplice"
+	},
+	"DFS Pre-Order": {
+		"prefix": "dfsPre",
+		"body": [
+			"function preOrder(nodo) {",
+			"\tif (!nodo) return;",
+			"\tconsole.log(nodo.val); // VISITA (Prima della discesa)",
+			"\tpreOrder(nodo.sx);",
+			"\tpreOrder(nodo.dx);",
+			"}"
+		],
+		"description": "Visita Pre-Order: IO -> SX -> DX"
+	},
+	"DFS In-Order": {
+		"prefix": "dfsIn",
+		"body": [
+			"function inOrder(nodo) {",
+			"\tif (!nodo) return;",
+			"\tinOrder(nodo.sx);",
+			"\tconsole.log(nodo.val); // VISITA (Nel mezzo)",
+			"\tinOrder(nodo.dx);",
+			"}"
+		],
+		"description": "Visita In-Order: SX -> IO -> DX"
+	},
+	"DFS Post-Order": {
+		"prefix": "dfsPost",
+		"body": [
+			"function postOrder(nodo) {",
+			"\tif (!nodo) return;",
+			"\tpostOrder(nodo.sx);",
+			"\tpostOrder(nodo.dx);",
+			"\tconsole.log(nodo.val); // VISITA (Dopo la discesa)",
+			"}"
+		],
+		"description": "Visita Post-Order: SX -> DX -> IO"
+	},
+	"BFS Tree": {
+		"prefix": "bfs",
+		"body": [
+			"function bfs(radice) {",
+			"\tif (!radice) return;",
+			"\tconst coda = [radice]; // Coda FIFO",
+			"",
+			"\twhile (coda.length > 0) {",
+			"\t\tconst nodo = coda.shift(); // Prendo il primo",
+			"\t\tconsole.log(nodo.val);     // VISITA",
+			"",
+			"\t\tif (nodo.sx) coda.push(nodo.sx);   // Accodo figli",
+			"\t\tif (nodo.dx) coda.push(nodo.dx);",
+			"\t}",
+			"}"
+		],
+		"description": "Visita Ampiezza Albero (Coda)"
+	},
+	"BST Search": {
+		"prefix": "bstSearch",
+		"body": [
+			"function search(nodo, target) {",
+			"\tif (!nodo) return false;      // Non trovato",
+			"\tif (nodo.val === target) return true; // Trovato!",
+			"",
+			"\tif (target < nodo.val) return search(nodo.sx, target); // Cerca a SX",
+			"\treturn search(nodo.dx, target); // Cerca a DX",
+			"}"
+		],
+		"description": "Ricerca Binaria BST"
+	},
+	"BST Insert": {
+		"prefix": "bstInsert",
+		"body": [
+			"function insert(nodo, val) {",
+			"\tif (!nodo) return { val: val, sx: null, dx: null }; // Crea nuovo se null",
+			"",
+			"\tif (val < nodo.val) {",
+			"\t\tnodo.sx = insert(nodo.sx, val); // Vai a SX",
+			"\t} else {",
+			"\t\tnodo.dx = insert(nodo.dx, val); // Vai a DX",
+			"\t}",
+			"\treturn nodo;",
+			"}"
+		],
+		"description": "Inserimento BST"
+	},
+	"Graph Builder": {
+		"prefix": "graphBuilder",
+		"body": [
+			"// Mappa di Adiacenza: Chiave -> Array di Vicini",
+			"const grafo = new Map();",
+			"grafo.set('A', ['B', 'C']);"
+		],
+		"description": "Inizializzazione Grafo (Map)"
+	},
+	"Graph DFS": {
+		"prefix": "graphDFS",
+		"body": [
+			"function dfsGraph(nodo, visitati = new Set()) {",
+			"\tvisitati.add(nodo);",
+			"\tconsole.log(nodo); // VISITA",
+			"",
+			"\tconst vicini = grafo.get(nodo) || [];",
+			"\tfor (const vicino of vicini) {",
+			"\t\tif (!visitati.has(vicino)) {",
+			"\t\t\tdfsGraph(vicino, visitati); // Ricorsione",
+			"\t\t}",
+			"\t}",
+			"}"
+		],
+		"description": "Visita Profondità Grafo (Visited Set)"
+	},
+	"Graph BFS": {
+		"prefix": "graphBFS",
+		"body": [
+			"function bfsGraph(nodoPartenza) {",
+			"\tconst visitati = new Set([nodoPartenza]);",
+			"\tconst coda = [nodoPartenza];",
+			"",
+			"\twhile (coda.length > 0) {",
+			"\t\tconst nodo = coda.shift(); // Prendo il primo",
+			"\t\tconsole.log(nodo); // VISITA",
+			"",
+			"\t\tconst vicini = grafo.get(nodo) || [];",
+			"\t\tfor (const vicino of vicini) {",
+			"\t\t\tif (!visitati.has(vicino)) {",
+			"\t\t\t\tvisitati.add(vicino); // Segna SUBITO",
+			"\t\t\t\tcoda.push(vicino);",
+			"\t\t\t}",
+			"\t\t}",
+			"\t}",
+			"}"
+		],
+		"description": "Visita Ampiezza Grafo (Coda + Visited)"
+	}
+}

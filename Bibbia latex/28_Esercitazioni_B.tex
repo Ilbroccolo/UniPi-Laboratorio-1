@@ -1,0 +1,321 @@
+\section{Esercizio 1: Albero Binario, Generatori e Prototipi di Mappe}
+
+\begin{definition}{Richieste Esercizio 1}
+\textbf{1. Classe NodoBinario:} Rappresenta un nodo di un albero binario.
+\begin{itemize}
+    \item Costruttore: \texttt{val} (numero), \texttt{left} e \texttt{right} (opzionali, devono essere \texttt{NodoBinario} o \texttt{null}). Se \texttt{val} non è numero o i figli non sono validi, lanciare \texttt{TypeError}.
+    \item Un nodo è \textbf{foglia} se ha entrambi i figli null.
+\end{itemize}
+\textbf{2. Generatore foglieConProfondita(radice):} 
+\begin{itemize}
+    \item Visita l'albero in \textbf{preordine}.
+    \item Produce una sequenza di coppie \texttt{[profondita, valore]} per ogni nodo foglia (radice ha profondità 0).
+\end{itemize}
+\textbf{3. Estensione di Map (Prototipo):} 
+\begin{itemize}
+    \item Metodo \texttt{incrementa(key, amount)}: Se la chiave non c'è, la inserisce associata ad \texttt{amount}; se c'è, ne incrementa il valore. Ritorna la Map stessa.
+\end{itemize}
+\textbf{4. Metodo Statico in Map:}
+\begin{itemize}
+    \item \texttt{sommaFogliePerProfondita(radice)}: Usa il generatore per restituire una Map con chiave=profondità e valore=somma dei valori delle foglie a quella profondità.
+\end{itemize}
+\end{definition}
+
+
+\subsection{Soluzione Codice}
+\begin{jsbox}[title={Soluzione Esercizio 1}]
+class NodoBinario {
+  constructor(val, left = null, right = null) {
+    if (typeof val !== "number") {
+      throw new TypeError("val deve essere numero");
+    }
+    if (left !== null && !(left instanceof NodoBinario)) {
+      throw new TypeError("left non valido");
+    }
+    if (right !== null && !(right instanceof NodoBinario)) {
+      throw new TypeError("right non valido");
+    }
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+
+  // Un nodo è foglia se non ha figli
+  get isLeaf() {
+    return this.left === null && this.right === null;
+  }
+}
+
+// Generatore per visitare le foglie in preordine
+function* foglieConProfondita(nodo, profondita = 0) {
+  if (nodo === null) return;
+  
+  // Se è foglia, produce la coppia [profondita, valore]
+  if (nodo.isLeaf) {
+    yield [profondita, nodo.val];
+  } else {
+    // Visita preordine: sinistra poi destra
+    yield* foglieConProfondita(nodo.left, profondita + 1);
+    yield* foglieConProfondita(nodo.right, profondita + 1);
+  }
+}
+
+// Modifica del prototipo di Map
+Map.prototype.incrementa = function(key, amount) {
+  if (!this.has(key)) {
+    this.set(key, amount);
+  } else {
+    this.set(key, this.get(key) + amount);
+  }
+  return this;
+};
+
+// Metodo statico aggiunto alla classe Map
+Map.sommaFogliePerProfondita = function(radice) {
+  let risultato = new Map();
+  if (radice === null) return risultato;
+  
+  for (let [profondita, valore] of foglieConProfondita(radice)) {
+    risultato.incrementa(profondita, valore);
+  }
+  return risultato;
+};
+\end{jsbox}
+
+\section{Esercizio 2: Sistema di Ticketing, Ereditarietà ed Eccezioni}
+
+\begin{definition}{Richieste Esercizio 2}
+\textbf{1. Classe Ticket:}
+\begin{itemize}
+    \item Costruttore: \texttt{codice} (stringa non vuota), \texttt{priorita} (1-5 inclusi). Lancia \texttt{TypeError} se non validi.
+    \item Proprietà private: \texttt{\#codice} (read-only), \texttt{\#chiuso} (read-only, inizialmente false), \texttt{\#log} (read-only array), \texttt{\#priorita} (read/write, lancia \texttt{PrioritaNonValida} se fuori 1-5).
+    \item Metodi: \texttt{aggiungiNota(testo)} (aggiunge a log), \texttt{chiudi()} (imposta chiuso=true e logga "CHIUSURA").
+    \item Se il ticket è chiuso, modifiche a priorità o log lanciano \texttt{ModificaTicketChiuso(codice)}.
+\end{itemize}
+\textbf{2. Classe TicketConSLA (extends Ticket):}
+\begin{itemize}
+    \item Aggiunge \texttt{\#tempoMassimo} (read-only) e \texttt{\#tempoTrascorso} (read/write, init 0).
+    \item Se in scrittura \texttt{tempoTrascorso > tempoMassimo}, il ticket è \texttt{chiudi()} e lancia \texttt{SLASuperato(codice)}.
+\end{itemize}
+\textbf{3. Funzione incrementaTempo(tickets, delta):}
+\begin{itemize}
+    \item Prende array eterogeneo, incrementa il tempo solo alle istanze \texttt{TicketConSLA}.
+    \item Non si interrompe all'errore, ma intercetta i \texttt{SLASuperato} e restituisce un array dei ticket che li hanno causati.
+\end{itemize}
+\end{definition}
+
+\subsection{Soluzione Codice}
+\begin{jsbox}[title={Soluzione Esercizio 2 - Classi ed Eccezioni}]
+class PrioritaNonValida extends Error {}
+
+class ModificaTicketChiuso extends Error {
+  constructor(codice) {
+    super("Ticket chiuso");
+    this.codice = codice;
+  }
+}
+
+class SLASuperato extends Error {
+  constructor(codice) {
+    super("SLA superato");
+    this.codice = codice;
+  }
+}
+
+class Ticket {
+  #codice;
+  #priorita;
+  #chiuso;
+  #log;
+
+  constructor(codice, priorita) {
+    if (typeof codice !== "string" || codice.length === 0) {
+      throw new TypeError("codice non valido");
+    }
+    if (!Number.isInteger(priorita) || priorita < 1 || priorita > 5) {
+      throw new TypeError("priorita non valida");
+    }
+    this.#codice = codice;
+    this.#priorita = priorita;
+    this.#chiuso = false;
+    this.#log = [];
+  }
+
+  get codice() { return this.#codice; }
+  get priorita() { return this.#priorita; }
+  get chiuso() { return this.#chiuso; }
+  // Restituisco una copia per proteggere l'array originale
+  get log() { return [...this.#log]; }
+
+  set priorita(p) {
+    if (this.#chiuso) {
+      throw new ModificaTicketChiuso(this.#codice);
+    }
+    if (!Number.isInteger(p) || p < 1 || p > 5) {
+      throw new PrioritaNonValida();
+    }
+    this.#priorita = p;
+    this.#log.push("Cambiata priorità a valore " + p);
+  }
+
+  aggiungiNota(testo) {
+    if (this.#chiuso) {
+      throw new ModificaTicketChiuso(this.#codice);
+    }
+    this.#log.push(testo);
+  }
+
+  chiudi() {
+    if (!this.#chiuso) {
+      this.#chiuso = true;
+      this.#log.push("CHIUSURA");
+    }
+  }
+}
+
+class TicketConSLA extends Ticket {
+  #tempoMassimo;
+  #tempoTrascorso;
+
+  constructor(codice, priorita, tempoMassimo) {
+    super(codice, priorita);
+    if (typeof tempoMassimo !== "number" || tempoMassimo <= 0) {
+      throw new TypeError("tempoMassimo non valido");
+    }
+    this.#tempoMassimo = tempoMassimo;
+    this.#tempoTrascorso = 0;
+  }
+
+  get tempoMassimo() { return this.#tempoMassimo; }
+  get tempoTrascorso() { return this.#tempoTrascorso; }
+
+  set tempoTrascorso(t) {
+    if (typeof t !== "number" || t < 0) {
+      throw new TypeError("tempoTrascorso non valido");
+    }
+    this.#tempoTrascorso = t;
+    if (this.#tempoTrascorso > this.#tempoMassimo) {
+      super.chiudi();
+      throw new SLASuperato(this.codice);
+    }
+  }
+}
+
+function incrementaTempo(tickets, delta) {
+  let risultati = [];
+  if (!Array.isArray(tickets)) return risultati;
+  
+  for (let t of tickets) {
+    if (t instanceof TicketConSLA) {
+      try {
+        t.tempoTrascorso = t.tempoTrascorso + delta;
+      } catch (e) {
+        if (e instanceof SLASuperato) {
+          risultati.push(t);
+        } else {
+           throw e; // Rilancio se l'errore è inaspettato (non un SLA)
+        }
+      }
+    }
+  }
+  return risultati;
+}
+\end{jsbox}
+
+\section{Esercizio 3: Parcometro con Gestione dello Storico Globale}
+
+\begin{definition}{Richieste Esercizio 3}
+\textbf{1. Classe Movimento:}
+Costruttore con: \texttt{tipo} ("R" o "S"), \texttt{euro} ($\ge 0$), \texttt{motivo} (stringa), \texttt{data} (istanza Date).
+\\
+\textbf{2. Classe Parcometro:}
+\begin{itemize}
+    \item Costruttore: \texttt{targa} (stringa non vuota), \texttt{credito} (numero $\ge 0$, default 0). Lancia TypeError se errati.
+    \item Sola lettura per il credito disponibile.
+    \item \texttt{ricarica(euro, motivo)} e \texttt{paga(euro, motivo)}: gestiscono il saldo e creano \texttt{Movimento}. Lanciano eccezioni sui tipi o \texttt{CreditoInsufficiente} se euro > credito (per \texttt{paga}).
+    \item \texttt{storico(k=5)} restituisce copia sicura degli ultimi $k$ movimenti ordinati dal più recente.
+    \item \textbf{Registro globale (\texttt{static \#registri = new Set()})}: Ogni operazione è una coppia \texttt{[p, m]} salvata nel set privato statico.
+    \item \texttt{static registro()} restituisce un \texttt{new Set()} clonando il registro globale.
+\end{itemize}
+\end{definition}
+
+\subsection{Soluzione Codice}
+\begin{jsbox}[title={Soluzione Esercizio 3 - Metodi statici e Set}]
+class CreditoInsufficiente extends Error {
+  constructor(message = "Credito insufficiente") {
+    super(message);
+    this.name = "CreditoInsufficiente";
+  }
+}
+
+class Movimento {
+  constructor(t, e, m, d) {
+    this.tipo = t;     // "R" ricarica oppure "S" spesa
+    this.euro = e;     // e >= 0
+    this.motivo = m;   // stringa
+    this.data = d;     // Date
+  }
+}
+
+class Parcometro {
+  #targa;
+  #movimenti = [];
+  #creditoCorrente = 0;
+  
+  // Variabile statica privata per il registro globale (Set)
+  static #registri = new Set();
+
+  constructor(t, c = 0) {
+    if (typeof t !== "string" || t === "") 
+        throw new TypeError("Targa deve essere stringa non vuota!");
+    if (typeof c !== "number" || c < 0) 
+        throw new TypeError("Credito deve essere numero non negativo!");
+        
+    this.#targa = t;
+    this.#creditoCorrente = c;
+  }
+
+  get credito() { return this.#creditoCorrente; }
+
+  // Metodo statico per validazioni input
+  static check(e, m) {
+    if (typeof m !== "string") 
+        throw new TypeError("Motivo deve essere stringa!");
+    if (!Number.isFinite(e) || e <= 0) 
+        throw new TypeError("Euro deve essere numero positivo!");
+  }
+
+  // Clona il set per non permettere alterazioni al registro interno
+  static registro() {
+    return new Set(this.#registri);
+  }
+
+  ricarica(euro, motivo) {
+    Parcometro.check(euro, motivo);
+    this.#creditoCorrente += euro;
+    
+    let mov = new Movimento("R", euro, motivo, new Date());
+    this.#movimenti.push(mov);
+    // Salva operazione nel registro globale statico
+    Parcometro.#registri.add([this, mov]);
+  }
+
+  paga(euro, motivo) {
+    Parcometro.check(euro, motivo);
+    if (euro > this.#creditoCorrente) throw new CreditoInsufficiente();
+    
+    this.#creditoCorrente -= euro;
+    
+    let mov = new Movimento("S", euro, motivo, new Date());
+    this.#movimenti.push(mov);
+    Parcometro.#registri.add([this, mov]);
+  }
+
+  storico(k = 5) {
+    // Restituisce array clonato: 
+    // slice estrae gli ultimi k, map({...x}) clona gli oggetti Movimento
+    // reverse() per averli dal più recente
+    return [...this.#movimenti.slice(-k).map((x) => ({...x}))].reverse();
+  }
+}
+\end{jsbox}

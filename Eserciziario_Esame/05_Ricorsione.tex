@@ -1,0 +1,53 @@
+\section{Capitolo 11: La Ricorsione (Lab 11)}
+
+\begin{dizionario}{Caso Base vs Passo Ricorsivo}
+\textbf{Caso Base:} La condizione che ferma la ricorsione (es. `n == 0`). Senza di esso = Stack Overflow.
+\textbf{Passo Ricorsivo:} La funzione chiama se stessa con un problema *più piccolo*.
+\end{dizionario}
+
+\begin{esercizio}{Es. 26: Somma Numeri in Array (Ricorsiva)}
+\textbf{TRACCIA:} Scrivere `sumRecursive(arr)` che somma gli elementi di un array usando la ricorsione (senza cicli for/while).
+\textit{Suggerimento: somma = testa + somma(coda).}
+\end{esercizio}
+
+\begin{jsbox}
+function sumRecursive(arr) {
+    // Caso Base: Array vuoto -> somma 0
+    if (arr.length === 0) return 0;
+    
+    // Passo Ricorsivo: Primo elemento + somma del resto
+    return arr[0] + sumRecursive(arr.slice(1));
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 27: Palindroma Ricorsiva}
+\textbf{TRACCIA:} Scrivere `isPalindrome(str)` che controlla se una stringa è palindroma ricorsivamente.
+\textit{Logica: Prima lettera == Ultima lettera AND il centro è palindromo.}
+\end{esercizio}
+
+\begin{jsbox}
+function isPalindrome(str) {
+    // Casi Base
+    if (str.length <= 1) return true;
+    
+    // Controllo estremi
+    if (str[0] !== str[str.length - 1]) return false;
+    
+    // Ricorsione sul centro
+    return isPalindrome(str.slice(1, -1));
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 28: Tartaglia (Coefficiente Binomiale)}
+\textbf{TRACCIA:} Calcolare $C(n, k)$ (Tartaglia) ricorsivamente.
+Formula: $C(n, k) = C(n-1, k-1) + C(n-1, k)$.
+\end{esercizio}
+
+\begin{jsbox}
+function tartaglia(n, k) {
+    if (k === 0 || k === n) return 1; // Bordi del triangolo
+    if (k > n) return 0;
+    
+    return tartaglia(n - 1, k - 1) + tartaglia(n - 1, k);
+}
+\end{jsbox}

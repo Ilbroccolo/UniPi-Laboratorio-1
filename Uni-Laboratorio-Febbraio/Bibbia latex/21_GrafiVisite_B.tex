@@ -1,0 +1,61 @@
+\section{Grafi: Visite DFS e BFS (Lab 21)}
+
+\subsection{Attenzione ai Cicli!}
+A differenza degli alberi, nei grafi puoi girare in tondo.
+È \textbf{obbligatorio} usare un insieme \texttt{visited} per ricordarsi dove siamo già stati, altrimenti il programma va in loop infinito.
+
+\subsection{DFS (Visita in Profondità)}
+\begin{concept}{Labirinto (Filo di Arianna)}
+Esplora un sentiero fino alla fine, poi torna indietro (**Backtracking**).
+Usa la **Ricorsione** (Stack).
+\end{concept}
+\begin{jsbox}
+function dfs(nodo, visited = new Set()) {
+    // 1. Segno come visitato
+    visited.add(nodo);
+    console.log(nodo);
+    
+    // 2. Prendo i vicini dalla Mappa (vedi Cap. 20)
+    let vicini = grafo.get(nodo);
+    
+    // 3. Per ogni vicino non ancora visto, vado in profondità
+    for (let vicino of vicini) {
+        if (!visited.has(vicino)) {
+            dfs(vicino, visited);
+        }
+    }
+}
+\end{jsbox}
+
+\subsection{BFS (Visita in Ampiezza)}
+\begin{concept}{Onda d'Urto}
+Esplora a cerchi concentrici (tutti i vicini a distanza 1, poi distanza 2...).
+Usa una **Coda** (FIFO).
+\end{concept}
+\begin{jsbox}
+function bfs(startNode) {
+    let visited = new Set();
+    let coda = [startNode];
+    
+    visited.add(startNode); // Importante: segna subito!
+    
+    while (coda.length > 0) {
+        let nodo = coda.shift(); // Prendo il primo
+        console.log(nodo);
+        
+        let vicini = grafo.get(nodo);
+        for (let v of vicini) {
+            if (!visited.has(v)) {
+                visited.add(v); // Segna
+                coda.push(v);   // Aggiungi alla coda
+            }
+        }
+    }
+}
+\end{jsbox}
+
+\subsection{Applicazioni}
+\begin{itemize}
+    \item **Componenti Connesse:** Se lanci una DFS e non visiti tutti i nodi, significa che il grafo è spezzato in isole.
+    \item **Shortest Path:** La BFS trova sempre la strada col minor numero di salti.
+\end{itemize}

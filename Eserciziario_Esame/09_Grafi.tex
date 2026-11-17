@@ -1,0 +1,66 @@
+\section{Capitoli 20-21: Grafi}
+
+\begin{dizionario}{Grafo Orientato vs Non Orientato}
+\textbf{Orientato:} A $\to$ B (Senso unico).
+\textbf{Non Orientato:} A $-$ B (Doppio senso).
+\textbf{Ciclo:} Un percorso che parte da un nodo e torna allo stesso nodo.
+\end{dizionario}
+
+\begin{esercizio}{Es. 39: Grado di un Nodo}
+\textbf{TRACCIA:} Dato un grafo (mappa di adiacenza) e un nodo, restituire il numero di vicini (grado).
+\end{esercizio}
+
+\begin{jsbox}
+function grado(grafo, nodo) {
+    if (!grafo.has(nodo)) return 0;
+    return grafo.get(nodo).length;
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 40: Esiste Percorso (DFS)}
+\textbf{TRACCIA:} Scrivere `haPercorso(g, start, end)` che ritorna true se esiste una strada da `start` a `end`.
+Usa DFS e un Set `visited` per evitare loop.
+\end{esercizio}
+
+\begin{jsbox}
+function haPercorso(grafo, curr, target, visited = new Set()) {
+    if (curr === target) return true;
+    
+    visited.add(curr);
+    let vicini = grafo.get(curr) || [];
+    
+    for (let v of vicini) {
+        if (!visited.has(v)) {
+            if (haPercorso(grafo, v, target, visited)) return true;
+        }
+    }
+    return false;
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 41: Distanza Minima (BFS)}
+\textbf{TRACCIA:} Trovare la distanza minima (numero di passi) tra `start` e `end`.
+Usa BFS (Code).
+\end{esercizio}
+
+\begin{jsbox}
+function distanzaMinima(grafo, start, end) {
+    let queue = [[start, 0]]; // [nodo, distanza]
+    let visited = new Set([start]);
+    
+    while (queue.length > 0) {
+        let [curr, dist] = queue.shift();
+        
+        if (curr === end) return dist;
+        
+        let vicini = grafo.get(curr) || [];
+        for (let v of vicini) {
+            if (!visited.has(v)) {
+                visited.add(v);
+                queue.push([v, dist + 1]);
+            }
+        }
+    }
+    return -1; // irraggiungibile
+}
+\end{jsbox}

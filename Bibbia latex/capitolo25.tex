@@ -1,0 +1,432 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- PREAMBOLO E PACCHETTI ---
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable, theorems}
+\usepackage{listings}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+
+\geometry{margin=2cm}
+
+% --- PALETTE COLORI ACCADEMICA ---
+\definecolor{paletteIndigo}{HTML}{3F51B5}
+\definecolor{paletteRegalia}{HTML}{522D80}
+\definecolor{paletteLenurple}{HTML}{BA55D3}
+\definecolor{paletteLavender}{HTML}{E6E6FA}
+
+% --- CONFIGURAZIONE STILE CODICE (jsbox) ---
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, class, const, continue, debugger, default, delete, do, else, enum, export, extends, false, finally, for, function, if, import, in, instanceof, new, null, return, super, switch, this, throw, true, try, typeof, var, void, while, with, yield, get, set, static, require},
+  keywordstyle=\color{paletteIndigo}\bfseries,
+  ndkeywords={boolean, number, String, Array, Date, Error, TypeError, ReferenceError, Map, Set, JSON, RegExp, Math, console, Buffer, process, fs, http, os},
+  ndkeywordstyle=\color{paletteRegalia}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{gray}\ttfamily,
+  stringstyle=\color{paletteLenurple}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+  language=JavaScript,
+  backgroundcolor=\color{paletteLavender!20},
+  basicstyle=\small\ttfamily,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=8pt,
+  showstringspaces=false,
+  breaklines=true,
+  frame=leftline,
+  bordercolor=\color{paletteIndigo},
+  tabsize=2
+}
+
+% --- AMBIENTI BOX PERSONALIZZATI ---
+\newtcolorbox{definition}[2][]{
+  colback=paletteLavender!30, colframe=paletteIndigo, fonttitle=\bfseries,
+  title=Definizione: #2, breakable, enhanced, attach boxed title to top left={xshift=3mm, yshift=-2mm},
+  boxed title style={colback=paletteIndigo}
+}
+
+\newtcolorbox{concept}[2][]{
+  colback=paletteLenurple!10, colframe=paletteLenurple, fonttitle=\bfseries,
+  title=#2, breakable, enhanced
+}
+
+\newtcolorbox{exercise}[2][]{
+  colback=white, colframe=paletteRegalia, fonttitle=\bfseries,
+  title=Esercizio: #2, breakable, enhanced
+}
+
+\newtcolorbox{solution}[1][]{
+  colback=green!5, colframe=green!40!black, fonttitle=\bfseries,
+  title=Soluzione, breakable, enhanced
+}
+
+\title{\textcolor{paletteRegalia}{\Huge \textbf{Laboratorio I: La Bibbia Completa}} \\ 
+\large \textit{Eccezioni, Classi di Sistema, Moduli ed Esercitazione GradeBook}}
+\author{A.A. 2025/2026}
+\date{}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Bug, Errori ed Eccezioni}
+
+Durante lo sviluppo di un programma possono essere introdotti dei difetti, comunemente definiti bug. 
+
+\subsection{Tipologie di Errori}
+Gli errori possono essere di diversa natura:
+\begin{itemize}
+    \item \textbf{Errori di sintassi}: Di solito riconosciuti subito dal sistema.
+    \item \textbf{Errori di battitura (typo)}: Un nome di una variabile/funzione scritto in modo sbagliato possono generare un errore ma non sempre in JavaScript.
+    \item \textbf{Errori di logica}: L'algoritmo proposto non funziona in alcuni casi; di solito sono silenziosi fino a quando non si incontra il caso limite.
+    \item \textbf{Errori esterni al programma}: Errori di input/output (l'utente inserisce dei dati mal formattati), un file cancellato per sbaglio, fallimento del disco rigido, rete non funzionante per cavo rotto o router deceduto, ecc.
+\end{itemize}
+
+\subsection{Gestione degli Errori}
+Il debugging per trovare i bug è un processo che può essere molto difficile. Scrivere codice ben organizzato e usare la modalità \texttt{'use strict'} ci aiuta a trovare i bug.
+Alcuni tipi di errori non possono essere evitati. JavaScript prova sempre a trovare una soluzione, ma a volte restituisce un risultato sbagliato o un messaggio di errore. Non è una buona idea esibire i messaggi di errore all'utente. Bisogna gestire gli errori, dare feedback e continuare l'esecuzione.
+
+\begin{definition}{Eccezione}
+Meccanismo di interruzione del programma in caso di errore. Viene lanciata quando l'errore compare. Le eccezioni possono essere automatiche o lanciate manualmente al bisogno. Possono essere catturate nel posto più adatto del programma, anche solo per evitare messaggi di errore brutti.
+\end{definition}
+
+\subsection{Catturare un'Eccezione: try-catch-finally}
+Il blocco \texttt{try} include i comandi che possono generare un errore. Il codice viene eseguito fino al primo comando che genera un errore (incluso nelle funzioni annidate). I comandi successivi all'errore non vengono eseguiti. Se compare un errore, si esegue il blocco \texttt{catch}. La variabile \texttt{e} contiene informazioni sull'errore. Se non c'è errore, il blocco \texttt{catch} viene saltato.
+
+\begin{lstlisting}
+try {
+  // comandi
+} catch (e) {
+  // comandi gestione errore
+} finally {
+  // comandi finali
+}
+\end{lstlisting}
+
+L'eccezione viene memorizzata in una variabile di tipo \texttt{Error} che espone proprietà come: \texttt{message}, \texttt{stack}, \texttt{name}. 
+Il blocco \texttt{finally} permette di includere comandi da eseguire \textit{sempre}, sia nel caso di errore che non, utile per lasciare i dati in uno stato valido o chiudere file.
+
+\subsection{Esempio Pratico: Creare e Lanciare Eccezioni Custom}
+Possiamo definire un'intera gerarchia di errori per distinguere tra vari tipi di problematiche.
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=1.5cm and 2cm,
+  classnode/.style={rectangle, draw=paletteRegalia, fill=paletteLavender!40, thick, minimum width=3cm, minimum height=1cm, align=center, font=\bfseries}
+]
+\node[classnode] (error) {Error};
+\node[classnode, below=of error] (expr) {ExpressionError};
+\node[classnode, below left=of expr] (opnd) {OperandError};
+\node[classnode, below right=of expr] (oprt) {OperatorError};
+
+\draw[-Latex, thick, paletteIndigo] (expr) -- (error);
+\draw[-Latex, thick, paletteIndigo] (opnd) -- (expr);
+\draw[-Latex, thick, paletteIndigo] (oprt) -- (expr);
+\end{tikzpicture}
+\end{center}
+
+Ecco il codice completo per l'implementazione della funzione \texttt{calc} e \texttt{calcAll} con la gerarchia di eccezioni:
+
+\begin{lstlisting}
+class ExpressionError extends Error { ; }
+class OperatorError extends ExpressionError { ; }
+class OperandError extends ExpressionError {
+  operand;
+  constructor(message, operand) {
+    super(message);
+    this.operand = operand;
+  }
+}
+
+function calc(a) {
+  var [op, ...x] = a;
+  for (let n of x)
+    if (typeof n != "number")
+      throw new OperandError("Operand is not correct, should be number", n);
+
+  switch (op) {
+    case '+': return x.reduce((y,z)=>(y+z),0);
+    case '-': 
+      var [x1, ...x_rest] = x;
+      return x_rest.reduce((y,z)=>(y-z),x1);
+    case '*': return x.reduce((y,z)=>(y*z),1);
+    case '/': 
+      var [x1, ...x_rest] = x;
+      return x_rest.reduce((y,z)=>(y/z), x1);
+    default:
+      throw new OperatorError("Operator is not correct, should be +*-/");
+  }
+}
+
+function calcAll(expressions) {
+  let res = [];
+  for (let expr of expressions) {
+    let val = undefined;
+    try {
+      val = calc(expr);
+    } catch (e) {
+      if (e instanceof ExpressionError) val = null;
+      else throw e;
+    }
+    res.push(val);
+  }
+  return res;
+}
+\end{lstlisting}
+
+\section{Classi di Sistema (Built-in) e Moduli Utili}
+
+\subsection{Oggetti Predefiniti e Wrapper}
+Lo standard JavaScript include oggetti predefiniti. Per ogni tipo base, esiste una classe wrapper con lo stesso nome con iniziale maiuscola: \texttt{Number}, \texttt{Boolean}, \texttt{String}, \texttt{BigInt}. I costruttori convertono l'argomento nel tipo corrispondente:
+\begin{itemize}
+    \item \texttt{Number("1.33") === 1.33}.
+    \item \texttt{String(14) === "14"}.
+    \item Offrono costanti e metodi statici, es. \texttt{Number.EPSILON}, \texttt{Number.isFinite(3.14)}.
+\end{itemize}
+
+\subsection{Date e RegExp}
+\begin{concept}{Classe Date}
+Fornisce oggetti che rappresentano date dal 20 Aprile 271.821 a.C. al 13 Settembre 275.760 d.C. 
+Attenzione: \textbf{Il mese parte da 0 = Gennaio}.
+Gli oggetti \texttt{Date} sono sostanzialmente numeri espressi in millisecondi dal 1 Gennaio 1970, consentendo operazioni aritmetiche (es. \texttt{b - a}).
+\end{concept}
+
+\begin{concept}{Espressioni Regolari (RegExp)}
+Esprimono schemi di corrispondenza su stringhe. Hanno una denotazione letterale con \texttt{/.../}.
+Metodi principali: \texttt{e.test(s)}, \texttt{e.exec(s)}, \texttt{s.match(e)}, \texttt{s.matchAll(e)}.
+Flag: \texttt{/g} (tutte le occorrenze), \texttt{/i} (ignora maiuscole/minuscole), \texttt{/m} (multilinea).
+\end{concept}
+
+\subsection{Array di Macchina e Collezioni}
+\begin{itemize}
+    \item \textbf{Typed Array}: \texttt{Int8Array}, \texttt{Float64Array}, ecc. Manipolano blocchi di memoria di dimensione esatta, utili per scambiare dati in formati pre-determinati via rete o file.
+    \item \textbf{Set}: Insiemi di valori qualunque. A differenza degli oggetti, le chiavi possono essere di qualunque tipo. Metodi: \texttt{add(e)}, \texttt{delete(e)}, \texttt{clear()}, \texttt{has(e)}, \texttt{size}.
+    \item \textbf{Map}: Associa chiavi a valori. Metodi: \texttt{set(k,v)}, \texttt{delete(k)}, \texttt{get(k)}, \texttt{keys()}, \texttt{values()}.
+\end{itemize}
+
+\subsection{JSON}
+Formato di serializzazione POJO (Plain Old JavaScript Object). Due metodi statici:
+\begin{itemize}
+    \item \texttt{JSON.stringify(o)}: da oggetto a stringa.
+    \item \texttt{JSON.parse(s)}: da stringa a oggetto.
+\end{itemize}
+
+\subsection{Moduli Host-Defined in Node.js}
+Node.js fornisce moduli built-in potentissimi per interagire con l'OS.
+
+\subsubsection{Modulo \texttt{fs} (File System)}
+Contiene funzioni per leggere/scrivere file e directory.
+
+\begin{lstlisting}
+const fs = require('fs');
+
+// Lettura sincrona (adatta a file piccoli)
+var s = fs.readFileSync('index.js');
+console.log(s.toString());
+
+// Lettura asincrona con callback (adatta a file grandi - chunk/stream)
+fs.readFile('dante.txt', 'utf-8', (err, data) => {
+  console.log(err, data.substr(0,100));
+});
+\end{lstlisting}
+
+\subsubsection{Moduli \texttt{os}, \texttt{process}, \texttt{http}}
+\begin{itemize}
+    \item \textbf{\texttt{os}}: Info su macchina, OS, CPU (\texttt{os.cpus()}), memoria (\texttt{os.totalmem()}), architettura (\texttt{os.arch()}).
+    \item \textbf{\texttt{process}}: Info sul processo in esecuzione, argomenti riga di comando, variabili d'ambiente (\texttt{process.env}).
+    \item \textbf{\texttt{http}}: Per parsing URL e protocollo web, per creare server.
+\end{itemize}
+
+\begin{lstlisting}
+const http = require('http');
+var server = http.createServer(function (req, res) {
+  res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
+  if (req.url.match(/dante/i)) {
+    res.end(fs.readFileSync('dante.txt', 'utf-8'));
+  } else {
+    res.end("Circolare, non c'e niente da vedere!");
+  }
+});
+server.listen(1337);
+\end{lstlisting}
+
+\section{Moduli in JavaScript}
+
+I moduli servono per dividere il sorgente in più file per tenere in ordine, riutilizzare parti del programma e distribuire le responsabilità tra programmatori.
+
+\begin{itemize}
+    \item \textbf{CommonJS (Tradizionale)}: Uso di \texttt{require()} e \texttt{exports}.
+\begin{lstlisting}
+const mod = require('./modulo');
+exports.fun = f2;
+\end{lstlisting}
+    \item \textbf{ES6 (Moderno)}: Uso di \texttt{import} ed \texttt{export}. Richiede la configurazione \texttt{"type": "module"} nel file \texttt{package.json}.
+\begin{lstlisting}
+import * as mod from './modulo.js';
+export const PIGRECO = 4;
+\end{lstlisting}
+\end{itemize}
+
+\section{Esercitazione Completa: Gestione Voti Universitari}
+
+Di seguito tutti gli esercizi dal PDF LAB1\_29 e la soluzione integrale con classi ed eccezioni.
+
+\begin{exercise}{1, 2, 3, 4, 5: Classi Grade, GradeBook e Errori}
+Implementare il sistema di registrazione voti, definendo esami (\texttt{Grade}) con vincoli (voto tra 18 e 30, crediti positivi, controllo lode) e un registro (\texttt{GradeBook}) diviso in \texttt{BachelorGradeBook} (180 CFU) e \texttt{MasterGradeBook} (120 CFU). Prevedere eccezioni custom per errori di inserimento, crediti mancanti ed esami duplicati.
+\end{exercise}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=1.5cm and 3cm,
+  classnode/.style={rectangle, draw=paletteRegalia, fill=paletteLavender!40, thick, minimum width=4cm, minimum height=1cm, align=center, font=\bfseries}
+]
+\node[classnode] (gb) {GradeBook};
+\node[classnode, below left=of gb] (bgb) {BachelorGradeBook};
+\node[classnode, below right=of gb] (mgb) {MasterGradeBook};
+
+\draw[-Latex, thick, paletteIndigo] (bgb) -- (gb);
+\draw[-Latex, thick, paletteIndigo] (mgb) -- (gb);
+\end{tikzpicture}
+\end{center}
+
+\begin{solution}[Codice Integrale Esercizi 1-5]
+\begin{lstlisting}
+class InvalidCreditsError extends Error {;}
+class InvalidValueError extends Error {;}
+
+class Grade {
+  #name; #credits; #date; #grade; #honors;
+  constructor (name, credits, date, grade, honors) {
+    this.#name = name;
+    if (credits <= 0) throw new InvalidCreditsError("Crediti negativi o uguali a 0");
+    this.#credits = credits;
+    this.#date = new Date(date);
+    if (grade < 18 || grade > 30) throw new InvalidValueError("Voto fuori scala");
+    this.#grade = grade;
+    if (honors && grade != 30) throw new InvalidValueError("Lode non assegnabile");
+    this.#honors = honors;
+  }
+  
+  get name() { return this.#name; }
+  get credits() { return this.#credits; }
+  get date() { return this.#date; }
+  get grade() { return this.#grade; }
+  get honors() { return this.#honors; }
+
+  equals(g) {
+    return this.name == g.name && this.credits == g.credits && 
+           this.date - g.date == 0 && this.grade == g.grade && this.honors == g.honors;
+  }
+
+  toString() {
+    let s = this.name + "(" + this.credits + "CFU):" + this.grade;
+    if (this.honors) s += "L";
+    return s;
+  }
+}
+
+class DuplicatedGradeError extends Error {; }
+class MissingCreditsError extends Error {; }
+
+class GradeBook {
+  #grades; #totalCredits;
+  
+  constructor (totalCredits) {
+    this.#grades = [];
+    this.#totalCredits = totalCredits;
+  }
+  
+  get totalCredits() { return this.#totalCredits; }
+  
+  get credits() {
+    let c = 0;
+    for (let g of this.#grades) c += g.credits;
+    return c;
+  }
+  
+  get missingCredits() { return this.#totalCredits - this.credits; }
+  
+  get average() {
+    let sum = 0; let count = 0;
+    for (let g of this.#grades) {
+      sum += (g.honors ? 32 : g.grade) * g.credits;
+      count += g.credits;
+    }
+    return sum / count;
+  }
+  
+  get startingGrade() {
+    if (this.missingCredits != 0) throw new MissingCreditsError("Crediti mancanti");
+    return Math.round(this.average * 11 / 3);
+  }
+
+  #search(grade) {
+    for (let g of this.#grades)
+      if (g.equals(grade)) return true;
+    return false;
+  }
+
+  register(grade) {
+    if (!(grade instanceof Grade)) throw new TypeError("Non e un voto");
+    if (this.#search(grade)) throw new DuplicatedGradeError("Esame gia registrato");
+    this.#grades.push(grade);
+  }
+
+  toString() {
+    let s = "VOTI:\n";
+    for (let g of this.#grades) s += "\t" + g.toString() + "\n";
+    return s;
+  }
+}
+
+class BachelorGradeBook extends GradeBook { constructor() { super(180); } }
+class MasterGradeBook extends GradeBook { constructor() { super(120); } }
+
+// Test:
+let gb = new GradeBook(180);
+gb.register(new Grade("LAB 1", 12, "2026/02/26", 30, true));
+\end{lstlisting}
+\end{solution}
+
+\begin{exercise}{Esercizi 6-9: Persistenza, Moduli e Regex (Per Casa)}
+\begin{itemize}
+    \item \textbf{Esercizio 6}: Aggiungere \texttt{exportJSON(f)} e \texttt{fromJSON(f)} usando File System \texttt{fs}.
+    \item \textbf{Esercizio 7}: Creare modulo \texttt{gradebook.js} che esporti le classi.
+    \item \textbf{Esercizio 8}: Validazione codice matricola (esattamente 6 cifre) usando le RegExp.
+    \item \textbf{Esercizio 9}: Validazione email studenti (\texttt{n.cognome[n]@studenti.unipi.it}).
+\end{itemize}
+\end{exercise}
+
+\begin{solution}[Codice Esercizi 8 e 9]
+\begin{lstlisting}
+// Esercizio 8
+function matricolaValida(m) {
+  return /^\d{6}$/.test(m);
+}
+
+// Esercizio 9
+function emailStudenteUnipiValida(e) {
+  return /^[a-z]\.[a-z]+[1-9]?\d*@studenti\.unipi\.it$/.test(e);
+}
+\end{lstlisting}
+\end{solution}
+
+\end{document}

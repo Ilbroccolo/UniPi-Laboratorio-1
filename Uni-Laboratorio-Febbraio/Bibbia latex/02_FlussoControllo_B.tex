@@ -1,0 +1,30 @@
+\section{Flusso di Controllo e Predicati (Lezione 03)}
+
+\subsection{Sintassi Formale e Binding}
+La definizione sintattica del linguaggio è descritta tramite la notazione \textbf{BNF} (Backus-Naur Form), che definisce ricorsivamente le produzioni valide.
+La gestione dello stato avviene mediante il meccanismo di \textbf{binding} (legame) tra un Identificatore e un Valore in memoria:
+\begin{itemize}
+    \item \texttt{let}: Definisce un binding mutabile. Lo stato associato all'identificatore può variare nel tempo ($x_t \neq x_{t+1}$).
+    \item \texttt{const}: Definisce un binding immutabile. L'associazione $Id \to Valore$ è costante per l'intera esecuzione.
+    \item \texttt{var}: (Deprecato) Binding con scope di funzione e proprietà di \textit{hoisting}.
+\end{itemize}
+
+\subsection{Predicati e Ramificazioni}
+Le strutture condizionali valutano un predicato logico $P$.
+\begin{itemize}
+    \item \textbf{If / Else:} Dato un predicato $P$, il flusso $\Phi$ si divide in due rami $\Phi_{true}$ e $\Phi_{false}$.
+    \item \textbf{Operatore Ternario:} Funzione che mappa un booleano in due possibili valori di ritorno: $f(P) \to \{v_1, v_2\}$.
+\end{itemize}
+
+Lo \textbf{Switch} è una struttura di selezione discreta. Dato un valore $x$ e un insieme di costanti $C = \{c_1, c_2, \dots\}$, trasferisce il controllo al ramo $i$ tale che $x \equiv c_i$.
+\textit{Nota:} L'assenza di un'istruzione di interruzione (\texttt{break}) causa l'esecuzione sequenziale dei rami successivi ("fall-through").
+
+\subsection{Automatizzare con i Cicli (Loops)}
+Per compiere operazioni ripetitive, usiamo le strutture iterative.
+Il ciclo \textbf{For} è il "coltellino swizzero": composto da inizializzazione, condizione e incremento, ci permette di controllare perfettamente il numero di iterazioni. Esistono varianti comode come \texttt{for..in} (per scorrere le chiavi di un oggetto) e \texttt{for..of} (per i valori di un array).
+
+Se non sappiamo a priori quante volte dovremo iterare, usiamo il \textbf{While}, che continua finché la condizione è vera. Il suo fratello \textbf{Do-While} garantisce che il blocco venga eseguito \textit{almeno una volta} prima di controllare la condizione.
+All'interno dei cicli, possiamo usare \texttt{break} per uscire immediatamente o \texttt{continue} per saltare al giro successivo.
+
+\subsection{Misurare il Tempo}
+Infine, una competenza pratica: come misurare quanto è veloce il nostro codice? Utilizziamo \texttt{Date.now()} per ottenere il timestamp attuale (in millisecondi). Salvando il tempo all'inizio (\texttt{start}) e alla fine (\texttt{end}), la differenza ci darà la durata dell'esecuzione.

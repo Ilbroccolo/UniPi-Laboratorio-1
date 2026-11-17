@@ -1,0 +1,209 @@
+\section{Bug e Errori}
+
+Durante lo sviluppo di un programma possono essere introdotti dei difetti, comunemente chiamati \textbf{bug}.
+
+\begin{definition}{Tipologie di Errori}
+Gli errori si possono suddividere in diverse categorie:
+\begin{itemize}
+    \item \textbf{Errori di sintassi}: Di solito riconosciuti subito dal sistema.
+    \item \textbf{Errori di battitura (typo)}: Un nome di una variabile o funzione scritto in modo sbagliato può generare un errore, ma non sempre in JavaScript (che cerca di adattarsi).
+    \item \textbf{Errori di logica}: L'algoritmo proposto non funziona in alcuni casi. Sono di solito silenziosi fino a quando non si incontra il caso limite.
+    \item \textbf{Errori esterni al programma}: Come errori di input/output (dati mal formattati inseriti dall'utente), un file cancellato per sbaglio, il fallimento del disco rigido, o problemi di rete (cavo rotto, router non funzionante).
+\end{itemize}
+\end{definition}
+
+\subsection{Esempio di insorgenza di errori}
+Consideriamo una funzione \texttt{calc(a)} che, dato un array \texttt{a} in cui il primo elemento è un operatore aritmetico (+, -, *, /), restituisca il risultato ottenuto applicando l'operatore a tutti i rimanenti elementi.
+
+\begin{jsbox}[title={Funzione calc (versione con bug silenti)}]
+function calc(a) {
+  var [op, ...x] = a; // assegnamento destrutturante
+  switch (op) {
+    case '+': return x.reduce((y,z)=>(y+z),0);
+    case '-': 
+      var [x1, ...x_rest] = x; 
+      return x_rest.reduce((y,z)=>(y-z), x1);
+    case '*': return x.reduce((y,z)=>(y*z),1);
+    case '/': 
+      var [x1, ...x_rest] = x; 
+      return x_rest.reduce((y,z)=>(y/z), x1);
+  }
+}
+\end{jsbox}
+
+Senza controlli sui tipi, JavaScript produce comportamenti anomali (bug silenti):
+\begin{itemize}
+    \item \texttt{calc(['+', 'ciaone', 2, 3, 4])} $\rightarrow$ restituisce \texttt{'0ciaone234'} (concatenazione invece di somma).
+    \item \texttt{calc(['-', 'ciaone', 2, 3, 4])} $\rightarrow$ restituisce \texttt{NaN}.
+    \item Omettendo un operatore valido, la funzione non entra in nessuno switch case e, a causa di variabili mancanti o mancati return, può generare errori come \texttt{ReferenceError: xx is not defined} o restituire \texttt{undefined}.
+\end{itemize}
+
+\section{Sistema di Gestione delle Eccezioni}
+
+Il \textbf{debugging} (trovare i bug) è un processo che può essere molto difficile. Scrivere codice ben organizzato e usare la modalità strict (\texttt{'use strict'}) aiuta a trovarli. Tuttavia, alcuni tipi di errori non possono essere evitati. 
+
+JavaScript prova sempre a trovare una soluzione, ma a volte il sistema dà un risultato sbagliato o un messaggio di errore. Non è una buona idea esibire i messaggi di errore (stack trace) all'utente in un sistema software. Bisogna gestire gli errori, dare feedback all'utente e poi continuare l'esecuzione dal punto giusto usando il Sistema di gestione delle eccezioni.
+
+
+\begin{definition}{Eccezione}
+Un'eccezione è un meccanismo di interruzione del programma in caso di errore. Viene "lanciata" quando l'errore compare.
+Le eccezioni possono essere automatiche o lanciate manualmente al bisogno. L'eccezione può essere "catturata" nel posto più adatto del programma per evitare blocchi o messaggi di errore sgradevoli.
+\end{definition}
+
+\subsection{Catturare un'eccezione (\texttt{try...catch})}
+Per catturare un'eccezione si usa il costrutto \texttt{try-catch}.
+
+\begin{jsbox}[title={Blocco try-catch}]
+try {
+  // comandi, incluse chiamate a funzioni che lanciano eccezioni
+} catch (e) {
+  // comandi gestione errore
+}
+\end{jsbox}
+
+\textbf{Comportamento:}
+\begin{enumerate}
+    \item Il codice del blocco \texttt{try} viene eseguito fino al primo comando che genera un errore, incluso nelle chiamate annidate di funzioni.
+    \item I comandi oltre l'errore non vengono eseguiti e viene restituito il controllo alla funzione corrente.
+    \item Se compare un errore, si esegue il blocco \texttt{catch}. La variabile \texttt{e} (oggetto \texttt{Error}) contiene informazioni sull'errore.
+    \item Se non c'è nessun errore, il blocco \texttt{catch} viene saltato e si continua l'esecuzione del programma.
+\end{enumerate}
+
+\subsubsection{L'oggetto \texttt{Error}}
+L'eccezione viene memorizzata in una variabile di tipo \texttt{Error} (o un suo sottotipo). Questo oggetto possiede le seguenti proprietà:
+\begin{itemize}
+    \item \texttt{message}: il messaggio associato all'errore.
+    \item \texttt{name}: il nome o tipo dell'eccezione.
+    \item \texttt{stack}: la traccia dello stack delle chiamate (utile per il debugging).
+\end{itemize}
+
+\subsection{Lanciare un'eccezione (\texttt{throw})}
+Tante volte può essere utile poter lanciare un'eccezione noi stessi per poter segnalare un problema specifico al nostro programma. L'esecuzione si ferma e si salta al blocco \texttt{catch} più vicino.
+
+\begin{jsbox}[title={Utilizzo di throw}]
+for (let i of x) {
+  if (typeof i != "number")
+    throw new Error("Gli operandi devono essere numeri");
+}
+
+// ... nello switch
+default:
+  throw new Error("Operatore sconosciuto");
+\end{jsbox}
+
+\subsection{Distinguere tra eccezioni personalizzate}
+Il tipo di un'eccezione ci aiuta a distinguere tra vari tipi di errori e gestirli in modo diverso. Utilizzare \texttt{new Error()} è utile ma non permette di riconoscere errori di natura diversa.
+È utile creare i nostri tipi di oggetti che estendono (\texttt{extends}) \texttt{Error} per definire un'intera gerarchia. Gli altri errori (non riconosciuti) possono essere rilanciati (\texttt{throw e}).
+
+\begin{jsbox}[title={Gerarchia di Eccezioni Personalizzate}]
+class ExpressionError extends Error {}
+class OperatorError extends ExpressionError {}
+
+class OperandError extends ExpressionError {
+  operand;
+  constructor(message, operand) {
+    super(message);
+    this.operand = operand;
+  }
+}
+\end{jsbox}
+
+L'utilizzo di \texttt{instanceof} permette di intercettarle selettivamente nel blocco catch:
+
+\begin{jsbox}[title={Intercettazione mirata}]
+catch(e) {
+  if (e instanceof OperandError) {
+    console.log("Non funziono per gli operandi: " + e.operand);
+  } else if (e instanceof OperatorError) {
+    console.log("Non funziono per l'operatore");
+  } else {
+    throw e; // Rilancio l'eccezione se è un altro tipo di errore
+  }
+}
+\end{jsbox}
+
+\subsection{Il blocco \texttt{finally}}
+Tante volte uscire dal programma/funzione subito dopo un errore non è indicato. Bisogna lasciare i dati su cui si è lavorato in uno stato valido, chiudere file, ecc..
+Il blocco \texttt{finally} ci permette di includere comandi da eseguire \textbf{sempre}, sia nel caso di errore che non.
+
+\begin{definition}{Sintassi Completa try-catch-finally}
+\begin{verbatim}
+try {
+  // blocco
+} catch (identificatore) {
+  // blocco gestione errore
+} finally {
+  // blocco eseguito sempre
+}
+\end{verbatim}
+I blocchi \texttt{finally} e \texttt{catch} possono essere omessi, ma almeno uno ci deve essere. I comandi try-catch-finally possono essere annidati.
+\end{definition}
+
+\section{Esercizio: Gestione Espressioni Aritmetiche}
+Di seguito la versione completa e robusta del codice della calcolatrice, che incorpora una gerarchia di eccezioni e l'uso combinato di \texttt{throw} e \texttt{try-catch}.
+
+\begin{jsbox}[title={Codice Completo: calc e calcAll}]
+// 1. Definizione Eccezioni
+class ExpressionError extends Error {}
+class OperatorError extends ExpressionError {}
+class OperandError extends ExpressionError {
+  operand;
+  constructor(message, operand) {
+    super(message);
+    this.operand = operand;
+  }
+}
+
+// 2. Funzione di calcolo che lancia eccezioni
+function calc(a) {
+  var [op, ...x] = a;
+  
+  // Controllo operandi
+  for (let n of x) {
+    if (typeof n != "number") {
+      throw new OperandError("Operand is not correct, should be number", n);
+    }
+  }
+
+  // Esecuzione operazione o errore operatore
+  switch (op) {
+    case '+': return x.reduce((y,z)=>(y+z), 0);
+    case '-': 
+      var [x1, ...x_rest] = x;
+      return x_rest.reduce((y,z)=>(y-z), x1);
+    case '*': return x.reduce((y,z)=>(y*z), 1);
+    case '/': 
+      var [x1, ...x_rest] = x;
+      return x_rest.reduce((y,z)=>(y/z), x1);
+    default:
+      throw new OperatorError("Operator is not correct, should be +-*/");
+  }
+}
+
+// 3. Esecuzione batch con cattura
+function calcAll(expressions) {
+  let res = [];
+  for (let expr of expressions) {
+    let val = undefined;
+    try {
+      val = calc(expr);
+    } catch (e) {
+      if (e instanceof ExpressionError) {
+        val = null; // Gestione per le nostre eccezioni note
+      } else {
+        throw e;    // Rilancio eccezioni inattese (es. TypeError nativi)
+      }
+    }
+    res.push(val);
+  }
+  return res;
+}
+
+// Test
+let expressions1 = [
+  ['+', 1, 2, 3, 4],
+  ['%', 1, 2, 3, 4],  // Lancerà OperatorError
+  ['-', 1, 2, 3, 4]
+];
+console.log(calcAll(expressions1)); // [10, null, -8]
+\end{jsbox}

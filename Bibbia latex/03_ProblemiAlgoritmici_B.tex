@@ -1,0 +1,33 @@
+\section{Problemi Algoritmici (Lezione 04)}
+
+\subsection{Definizione e Risoluzione Algoritmi}
+In questa sezione applichiamo i costrutti del linguaggio alla risoluzione di problemi computazionali classici.
+
+\subsubsection{1. Calcolo Iterativo (Fattoriale)}
+Il problema richiede il calcolo della funzione $f(n) = n!$.
+L'approccio implementativo utilizza un \textbf{accumulatore di stato} ($acc$). Ad ogni passo $i$ dell'iterazione, lo stato viene aggiornato secondo la regola $acc_{i} = acc_{i-1} \times i$, con condizione di arresto $i=1$.
+Questo evidenzia il concetto di invarianza di ciclo.
+
+\subsubsection{2. Generazione di Serie (Pattern Asterischi)}
+Il problema riguarda la generazione di sequenze di lunghezza variabile dipendente da un parametro $n$.
+Si utilizzano \textbf{cicli annidati} (nested loops):
+\begin{itemize}
+    \item Il ciclo esterno controlla la cardinalità della riga $i$.
+    \item Il ciclo interno esegue $k$ operazioni, dove $k$ è funzione di $i$ ($k = f(i)$).
+\end{itemize}
+La complessità computazionale è quadratica $O(n^2)$.
+
+\subsubsection{3. Filtraggio Condizionale (Stampa Selettiva)}
+Data una sequenza di input $S = \{x_1, x_2, \dots, 0\}$, l'algoritmo agisce come un \textbf{filtro}.
+Per ogni elemento $x_k$, viene valutato un predicato composto $P(x_k, x_{k-1})$.
+$$ Output(x_k) \iff (x_k > 0 \land even(x_k)) \lor (x_k < 0 \land x_k > x_{k-1}) $$
+Questo richiede il mantenimento di uno stato "memoria" per l'elemento precedente $x_{k-1}$.
+
+\subsubsection{4. Numeri Perfetti}
+Un numero si dice "perfetto" quando la somma dei suoi divisori propri (escluso se stesso) è uguale al numero stesso. Ad esempio, 6 è perfetto perché $1+2+3 = 6$.
+L'esercizio chiede di trovare il più piccolo numero perfetto maggiore di un dato $N$. Qui combiniamo cicli e operatori matematici (modulo \%) per testare la divisibilità.
+
+\subsubsection{5. Analisi e Grafico di Funzione}
+Gli ultimi esercizi ci portano nel mondo dell'analisi matematica applicata.
+Dapprima si richiede di analizzare una funzione $f(x)$ in un intervallo $[a, b]$, trovandone gli zeri (dove incrocia l'asse X) e i punti di minimo e massimo.
+Infine, la sfida suprema: disegnare il grafico della funzione usando caratteri ASCII in console, data un'area e una risoluzione. Questo richiede di mappare coordinate matematiche continue su una griglia discreta di caratteri.

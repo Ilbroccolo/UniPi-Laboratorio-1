@@ -1,0 +1,254 @@
+\section{Classi, Ereditarietà e Generatori}
+
+\section{Il Diabolico Dualismo: Proto vs Prototype}
+Una delle fonti di confusione maggiori in JavaScript è la distinzione tra \texttt{\_\_proto\_\_} e \texttt{prototype}.
+
+\begin{definition}{Distinzione Fondamentale}
+    \begin{itemize}
+        \item \textbf{\texttt{\_\_proto\_\_}}: È una proprietà presente in \textbf{TUTTI} gli oggetti (funzioni incluse). Rappresenta il legame alla catena dei prototipi (da chi eredito?).
+        \item \textbf{\texttt{prototype}}: È una proprietà presente \textbf{SOLO} nelle funzioni. È l'oggetto che verrà assegnato come \texttt{\_\_proto\_\_} alle istanze create invocando quella funzione con \texttt{new}.
+    \end{itemize}
+\end{definition}
+
+\begin{concept}{Relazione di Identità}
+Data una funzione costruttore `F` e un oggetto `o` creato con `var o = new F()`, vale sempre:
+$$ \texttt{F.prototype} \equiv \texttt{o.\_\_proto\_\_} $$
+Nota bene: \texttt{F.\_\_proto\_\_} esiste, ma è il prototipo della funzione stessa (ovvero \texttt{Function.prototype}), non c'entra con gli oggetti creati da F.
+\end{concept}
+
+\section{Classi ed Espressioni Classe}
+Le classi (introdotte in ES6) sono "zucchero sintattico" sopra il modello a prototipi esistente.
+
+\subsection{Traduzione Dietro le Quinte}
+Cosa succede realmente quando dichiariamo una classe?
+
+\begin{jsbox}[title={Classe ES6}]
+class Persona {
+    constructor(n, e) {
+        this.nome = n;
+        this.eta = e;
+    }
+    compleanno() { this.eta++; }
+}
+\end{jsbox}
+
+\begin{jsbox}[title={Equivalente ES5 (Pseudocodice)}]
+function Persona(nome, eta) {
+    this.nome = nome;
+    this.eta = eta;
+    // this.__proto__ = Persona.prototype (implicito nel new)
+}
+Persona.prototype = {
+    constructor: Persona,
+    compleanno: function() { this.eta++; }
+};
+\end{jsbox}
+
+\subsection{Espressioni Classe}
+Come le funzioni, le classi possono essere anonime e assegnate a variabili:
+\begin{jsbox}
+var Persona = class {
+    constructor(n, e) { ... }
+};
+\end{jsbox}
+
+\section{Ereditarietà Avanzata}
+
+\subsection{Meccanismo di Implementazione}
+L'ereditarietà `class Studente extends Persona` non fa altro che concatenare i prototipi:
+\begin{enumerate}
+    \item \textbf{Istanze:} \texttt{Studente.prototype.\_\_proto\_\_ === Persona.prototype}. Questo permette alle istanze di Studente di accedere ai metodi di Persona.
+    \item \textbf{Statici:} \texttt{Studente.\_\_proto\_\_ === Persona}. Questo permette alla classe Studente di ereditare i metodi statici di Persona.
+\end{enumerate}
+
+\subsection{Overriding e `super`}
+Una sottoclasse può ridefinire (override) i metodi.
+\begin{itemize}
+    \item \textbf{super.metodo()}: Invoca il metodo dal prototipo del genitore.
+    \item \textbf{super() nel costruttore}: Obbligatorio prima di usare `this`.
+\end{itemize}
+
+\begin{algo}{Esecuzione di new Sottoclasse()}
+Quando si esegue `new Studente(...)`:
+\begin{enumerate}
+    \item Viene creato un oggetto vuoto.
+    \item La catena dei costruttori viene risalita fino alla radice (`Persona`).
+    \item Viene eseguito il costruttore di `Persona` (inizializza proprietà base).
+    \item Viene eseguito il costruttore di `Studente` (aggiunge proprietà specifiche).
+    \item L'oggetto completo viene restituito.
+\end{enumerate}
+\end{algo}
+
+\section{Membri di Classe (ES2022+)}
+
+\subsection{Campi Pubblici, Privati e Statici}
+JavaScript moderno permette definizioni dichiarative.
+
+\begin{jsbox}[title={Esempio Completo Liceale}]
+class Liceale extends Studente {
+    // Campo Statico (della classe)
+    static quanti = 0;
+
+    // Campo Privato (visibile solo dentro la classe)
+    #iscritto = false;
+
+    // Campo Pubblico (inizializzato su ogni istanza)
+    materie = ["Mate", "Italiano"];
+
+    constructor(nome) {
+        super(nome);
+        Liceale.quanti++;
+    }
+
+    unipi() { return this.#iscritto; } // OK
+    
+    // Accesso esterno a #iscritto -> Errore SyntaxError
+}
+\end{jsbox}
+
+\section{Getter e Setter (Accessors)}
+Permettono di intercettare la lettura e scrittura di proprietà.
+
+\begin{jsbox}
+let o = {
+    get x() { return 1; },      // Lettura o.x restituisce sempre 1
+    set x(v) { console.log(v); } // Scrittura o.x = 5 logga 5
+};
+\end{jsbox}
+
+\begin{algo}{Strategia di Ricerca Proprietà}
+Quando si accede a `obj.key`:
+\begin{enumerate}
+    \item Se la chiave esiste nell'oggetto:
+    \begin{itemize}
+        \item Se è un \textbf{getter}, invoca la funzione e restituisce il risultato.
+        \item Se è una proprietà base, restituisce il valore.
+    \end{itemize}
+    \item Se non esiste, cerca nel prototipo (ricorsivamente).
+    \item Se non trovata: \texttt{undefined}.
+\end{enumerate}
+Similmente per la scrittura (con i \textbf{setter}). I setter vengono ereditati!
+\end{algo}
+
+\section{Generatori}
+I generatori sono funzioni speciali che possono sospendere l'esecuzione e riprenderla, mantenendo lo stato locale.
+
+\subsection{Sintassi e Funzionamento}
+\begin{itemize}
+    \item Dichiarazione: \texttt{function* nome()} o \texttt{*metodo()}.
+    \item \textbf{\texttt{yield expr}}: Restituisce \texttt{expr} al chiamante e "congela" la funzione.
+    \item \textbf{\texttt{next(val)}}: Riprende l'esecuzione. Se si passa \texttt{val}, questo diventa il risultato dell'espressione \texttt{yield} che era in attesa.
+\end{itemize}
+
+\begin{jsbox}[title={Esempio Range}]
+function* range(a, b) {
+    let i = a;
+    while(i < b) yield i++;
+}
+// Uso
+for (var n of range(4, 8)) { console.log(n); } // 4, 5, 6, 7
+\end{jsbox}
+
+\subsection{Metodi Avanzati dei Generatori}
+Oltre a `next()`, l'oggetto generatore possiede:
+\begin{itemize}
+    \item \textbf{\texttt{return(v)}}: Termina forzatamente il generatore (come se ci fosse un `return v` nel codice).
+    \item \textbf{\texttt{throw(e)}}: Lancia un'eccezione all'interno del generatore (nel punto dello `yield`).
+\end{itemize}
+
+\subsection{Generatori Ricorsivi (`yield*`)}
+Per delegare la generazione a un altro iterabile, si usa `yield*`.
+\begin{jsbox}
+function* merge(g1, g2) {
+    yield* g1; // Emette tutti i valori di g1
+    yield* g2; // Poi tutti i valori di g2
+}
+\end{jsbox}
+
+\subsection{Esempio Complesso: La Poesia}
+Un generatore che estrae parole da un testo.
+\begin{jsbox}
+class Poesia {
+    #testo;
+    constructor(t) { this.#testo = t; }
+
+    *parole() {
+        var i = 0;
+        while (true) {
+            let f = this.#testo.indexOf(" ", i); // Cerca spazio
+            if (f >= 0) {
+                yield this.#testo.slice(i, f); // Restituisce parola
+                i = f + 1; // Avanza indice
+            } else {
+                yield this.#testo.slice(i); // Ultima parola
+                break; // Fine
+            }
+        }
+    }
+}
+var p = new Poesia("La vispa Teresa...");
+console.log([...p.parole()]); // Array di parole
+\end{jsbox}
+
+\section{Esercizi: Code (Queue)}
+Implementazione completa richiesta dal laboratorio.
+
+\subsection{Classe Base: Queue}
+\begin{jsbox}
+class Queue {
+    #array = []; // Array privato per lo storage
+
+    put(x) {
+        // Aggiunge in fondo
+        this.#array[this.#array.length] = x;
+    }
+
+    get() {
+        // Rimuove e restituisce dalla testa
+        let x = this.#array[0];
+        this.#array = this.#array.slice(1);
+        return x;
+    }
+
+    size() { return this.#array.length; }
+    
+    empty() { return this.#array.length === 0; }
+    
+    toString() {
+        return `Queue with ${this.size()} elements`;
+    }
+}
+\end{jsbox}
+
+\subsection{Sottoclasse: LimitedQueue}
+Eredita da Queue e aggiunge un controllo sulla capacità massima.
+
+\begin{jsbox}
+class LimitedQueue extends Queue {
+    #max_size; // Capacità massima
+
+    constructor(max_size) {
+        super(); // Inizializza this tramite Queue
+        this.#max_size = max_size;
+    }
+
+    // Metodo aggiuntivo
+    full() {
+        return this.size() == this.#max_size;
+    }
+
+    // Override di put
+    put(x) {
+        if (this.full()) {
+            console.log('Queue is full!!');
+        } else {
+            super.put(x); // Delega alla superclasse
+        }
+    }
+
+    // Override di toString con super
+    toString() {
+        return super.toString() + ` of ${this.#max_size}`;
+    }
+}
+\end{jsbox}

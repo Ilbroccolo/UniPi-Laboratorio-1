@@ -1,0 +1,447 @@
+\ifx\isStandalone\undefined
+\documentclass[a4paper,10pt]{article}
+
+% --- PACCHETTI FONDAMENTALI ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{lmodern}
+
+% --- PACCHETTI PER GRAFICA E COLORI ---
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{xcolor}
+
+% --- PACCHETTI PER I BLOCCHI DI CODICE ---
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+
+% --- DEFINIZIONE DEI COLORI PERSONALIZZATI ---
+\definecolor{paletteIndigo}{HTML}{303F9F}   % Indaco scuro
+\definecolor{paletteLavender}{HTML}{C5CAE9} % Lavanda chiaro
+\definecolor{paletteLenurple}{HTML}{7B1FA2} % Viola acceso
+\definecolor{textGray}{HTML}{757575}        % Grigio per il testo
+
+% --- CONFIGURAZIONE LINGUAGGIO JAVASCRIPT PER LISTINGS ---
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, const, let, class, extends, static, throw},
+  keywordstyle=\color{paletteIndigo}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{green!60!black}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]",
+  literate={à}{{\`a}}1
+           {è}{{\`e}}1
+           {é}{{\'e}}1
+           {ì}{{\`i}}1
+           {ò}{{\`o}}1
+           {ù}{{\`u}}1
+}
+
+% --- DEFINIZIONE DELL'AMBIENTE JSBOX ---
+\newtcblisting{jsbox}[1][]{
+  enhanced,
+  colback=gray!5,
+  colframe=paletteIndigo,
+  fonttitle=\bfseries,
+  listing only,
+  listing options={
+    language=JavaScript,
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    showstringspaces=false
+  },
+  #1 % Permette di passare il parametro title={}
+}
+
+\begin{document}
+\fi
+
+\newpage
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture, overlay]
+    % Sfondo Laterale (Viola scuro per stile Bibbia)
+    \fill[paletteIndigo] (current page.north west) rectangle ($(current page.south west) + (4cm,0)$);
+    
+    % Linea Accento (Lavanda)
+    \draw[paletteLavender, line width=4pt] ($(current page.north west) + (4.2cm,-2cm)$) -- ($(current page.south west) + (4.2cm,2cm)$);
+    
+    \node[anchor=north, inner sep=0, text width=12cm, align=center] at ($(current page.north west) + (12.5cm,-5cm)$) {
+        {\fontsize{18}{22}\selectfont \textcolor{textGray}{Università di Pisa}}\\[0.2cm]
+        {\fontsize{16}{20}\selectfont \textcolor{textGray}{Corso di Laurea in Informatica}}\\[2cm]
+        
+        {\fontsize{50}{60}\selectfont \textbf{\textcolor{paletteIndigo}{CHEAT SHEET}}}\\[0.5cm]
+        
+        {\fontsize{30}{40}\selectfont \textbf{LA BIBBIA DI JAVASCRIPT}}\\[1.5cm]
+        
+        \textcolor{paletteLenurple}{\rule{10cm}{4pt}}\\[1cm]
+        
+        {\Large \textbf{Riepilogo Definitivo (Diviso per Lezioni)}}\\[0.2cm]
+        {\large \textit{Sintassi, Metodi, Algoritmi e Snippet Salva-Vita}}\\[2cm]
+        
+        \textbf{\large Autore del riassunto:}\\
+        {\large Joseph Zucchelli (IlBroccolo)}\\[2cm]
+        
+        \vfill
+        {\large \textbf{Anno Accademico 2025 - 2026}}
+    };
+    
+    % Badge CS
+    \node[anchor=south east] at ($(current page.south east) + (-2cm, 2cm)$) {
+        \tikz\draw[fill=paletteLavender, draw=none] (0,0) rectangle (2,2) node[midway, paletteIndigo, font=\bfseries\huge] {CS};
+    };
+\end{tikzpicture}
+\end{titlepage}
+\clearpage
+
+\section{Cheat Sheet: La Bibbia di JavaScript (Per Lezioni)}
+Riepilogo dettagliato strutturato in base all'ordine progressivo del corso.
+
+%============================
+% PART 1: Lezioni 01-10
+%============================
+\subsection{Lezioni 01-02: Fondamenti, Tipi e Operatori}
+\begin{itemize}
+    \item \textbf{Strict Mode}: \texttt{"use strict";} all'inizio del file previene errori silenziosi (es. variabili non dichiarate).
+    \item \textbf{Tipi Primitivi}: \texttt{Number} (tutti i numeri, inclusi float e \texttt{NaN}), \texttt{String}, \texttt{Boolean}, \texttt{undefined} (variabile dichiarata ma non inizializzata), \texttt{null} (valore nullo intenzionale).
+    \item \textbf{Operatori Logici}: \texttt{\&\&} (AND), \texttt{||} (OR), \texttt{!} (NOT). Valutazione "Short-circuit": \texttt{a || b} restituisce \texttt{a} se \textit{truthy}, altrimenti \texttt{b}.
+    \item \textbf{Uguaglianza}: Usare SEMPRE \texttt{===} e \texttt{!==} per evitare conversioni di tipo implicite (es. \texttt{1 == "1"} è \texttt{true}, \texttt{1 === "1"} è \texttt{false}).
+\end{itemize}
+\begin{jsbox}[title={Snippet: Template Literals e Operatori}]
+// String interpolation
+console.log(`Esattamente ${2 + 2} gatti`); 
+
+// Operatore Ternario (if inline)
+let msg = eta >= 18 ? "Maggiorenne" : "Minorenne";
+\end{jsbox}
+
+\subsection{Lezione 03: Flusso di Controllo}
+\begin{jsbox}[title={Snippet: If, Switch e Cicli}]
+// If/Else
+if (x > 0) { /*...*/ } else if (x < 0) { /*...*/ } else { /*...*/ }
+
+// Switch
+switch(voto) { 
+    case 10: console.log("Max"); break; 
+    default: console.log("Altro"); 
+}
+
+// Cicli: for, while, do..while
+for(let i = 0; i < 5; i++) { if (i === 2) continue; if (i === 4) break; }
+while(n > 0) { n--; } // Valuta condizione PRIMA
+do { n++; } while(n < 5); // Valuta CONDIZIONE DOPO (esegue almeno 1 volta)
+\end{jsbox}
+
+\subsection{Lezione 04-05: Strutture Dati Base (Oggetti e Array)}
+\textbf{Oggetti}: Insiemi di coppie chiave-valore. Le chiavi sono \texttt{String} (o convertite a stringa).
+\textbf{Array}: Oggetti speciali ottimizzati per indici numerici con proprietà \texttt{length} e metodi iteratori.
+
+\begin{jsbox}[title={Snippet: Interazione con Array e Oggetti}]
+let obj = { nome: "Aldo", "età": 30 };
+console.log(obj.nome); // Dot notation
+console.log(obj["età"]); // Bracket notation (obbligatoria se chiave con spazi/simboli o variabile)
+
+// Array Mutanti (Attenzione!)
+let a = [1, 2, 3];
+a.push(4);    // Aggiunge in fondo -> [1,2,3,4]
+a.pop();      // Rimuove e restituisce l'ultimo [4] -> [1,2,3]
+a.unshift(0); // Aggiunge in testa -> [0,1,2,3]
+a.shift();    // Rimuove e restituisce la testa [0] -> [1,2,3]
+
+// Array Splice vs Slice
+a.splice(1, 1); // Rimuove 1 elem da indice 1. a diviene [1, 3] (MUTANTE)
+let b = a.slice(0, 1); // Ritorna copia da 0 escluso 1. b=[1], a è intatto (NON MUTANTE)
+\end{jsbox}
+
+\subsection{Lezioni 06-07: Funzioni, Scope e Closures}
+Ogni funzione è un oggetto di primo livello.
+\begin{itemize}
+    \item \textbf{Hoisting}: \texttt{function f()\{\}} può essere chiamata prima della sua definizione testuale. \texttt{let f = function()\{\}} non gode di hoisting.
+    \item \textbf{Scope (var vs let/const)}: \texttt{var} ha visibilità di funzione (Function Scope). \texttt{let} e \texttt{const} hanno visibilità di blocco (Block Scope, es. visibili solo dentro l'if o il for).
+\end{itemize}
+
+\begin{jsbox}[title={Snippet: Dichiarazioni e Closures}]
+// Arrow Function (Brevi e `this` lessicale)
+const somma = (a, b) => a + b; 
+
+// Closure: Incapsulamento / "Memoria" locale
+function counter(start) {
+    let count = start; // Privato grazie al Block Scope della funzione
+    return () => ++count; // Può leggere 'count' perché è nello stesso blocco lessicale
+}
+\end{jsbox}
+
+\subsection{Lezioni 08-09: Stringhe, JSON, Insiemi e Math}
+Le stringhe sono immutabili (metodi come \texttt{toUpperCase}, \texttt{replace(a, b)}, \texttt{split(",")} restituiscono NUOVE stringhe).
+
+\begin{jsbox}[title={Snippet: Math, Set e JSON}]
+// Oggetto Math
+Math.max(1, 10, 5); // 10
+Math.floor(5.9); // 5 (pavimento)
+Math.random(); // Numero casuale tra [0, 1)
+
+// Oggetto Set (Valori Univoci in memoria continua rapida)
+let s = new Set([1, 2, 2, 1]); // Set {1, 2}
+s.add(3); s.delete(1); s.has(2); // true
+
+// Serializzazione in JSON
+let str = JSON.stringify({a: 1}); // '{"a":1}'
+let x = JSON.parse(str); // {a:1} -> NUOVO oggetto. Le FUNZIONI e DATE si perdono nel parse!
+\end{jsbox}
+
+\subsection{Extra: Espressioni Regolari (RegEx)}
+Potentissime per ricerca, convalida e manipolazione di stringhe.
+Sintassi letterale: \texttt{/pattern/flags} (es. flag \texttt{g} per globale, \texttt{i} per case-insensitive).
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Classe} & \textbf{Metodo} & \textbf{Descrizione} \\
+\hline
+\texttt{RegExp} & \texttt{test(str)} & Vero se la stringa contiene il pattern. (Veloce!) \\
+\hline
+\texttt{RegExp} & \texttt{exec(str)} & Restituisce un Array con i dettagli del match, o \texttt{null}. \\
+\hline
+\texttt{String} & \texttt{match(rgx)} & Come exec, ma se flag \texttt{g} restituisce tutti i match. \\
+\hline
+\texttt{String} & \texttt{replace(rgx, n)} & Sostituisce i match con \texttt{n}. \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{jsbox}[title={Snippet: Utilizzo Pratico di RegEx}]
+const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+regexEmail.test("test@email.com"); // true
+
+const testo = "Il numero è 123 e poi 456";
+const regexNum = /\d+/g; // \d = cifre numeriche, + = una o più, g = tutte le occorrenze
+console.log(testo.match(regexNum)); // ["123", "456"]
+
+// Replace avanzato rimpiazzando tutte le vocali
+console.log("ciao".replace(/[aeiou]/ig, "*")); // "c**o"
+\end{jsbox}
+
+\subsection{Extra: Metodi Utili e Universali (Da Conoscere a Memoria)}
+Metodi built-in globali o di classi base che salvano spesso la vita.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|p{5.5cm}|p{8cm}|}
+\hline
+\textbf{Metodo} & \textbf{Comportamento} \\
+\hline
+\texttt{Number.parseInt(str, 10)} & Parsa una stringa in Intero (Base 10). Se fallisce: \texttt{NaN}. \\
+\hline
+\texttt{Number.parseFloat(str)} & Parsa stringhe in numeri a virgola mobile. \\
+\hline
+\texttt{isNaN(val)} o \texttt{Number.isNaN(val)} & Controlla se un valore è "Not a Number". (Il secondo è più rigoroso). \\
+\hline
+\texttt{Array.isArray(obj)} & Unico modo sicuro per capire se un Oggetto è in realtà un Array. \\
+\hline
+\texttt{Object.hasOwn(obj, "prp")} & (Moderno vs \texttt{hasOwnProperty}). Controlla se la proprietà appartiene DIRETTAMENTE all'oggetto, ignorando i prototipi. \\
+\hline
+\texttt{String.prototype.padStart(l, c)} & Aggiunge caratteri \texttt{c} in testa finché lunga \texttt{l} (\texttt{"5".padStart(2, "0")} $\to$ \texttt{"05"}). \\
+\hline
+\texttt{String.prototype.trim()} & Rimuove gli spazi/a capo vuoti a inizio e fine. \\
+\hline
+\end{tabular}
+\end{center}
+
+%============================
+% PART 2: Lezioni 11-18
+%============================
+\subsection{Lezioni 10-11: Callback e Ricorsione}
+\begin{itemize}
+    \item \textbf{Callback}: Una funzione passata come argomento ad un'altra funzione per essere eseguita in un secondo momento. Esempio classico: \texttt{setTimeout(fn, ms)}.
+    \item \textbf{Ricorsione}: Una funzione che chiama sé stessa. Regole d'oro per evitare lo \textit{Stack Overflow}:
+    \begin{enumerate}
+        \item \textbf{Caso Base}: Condizione di terminazione in cui si restituisce un valore senza rincorrere la funzione.
+        \item \textbf{Passo Ricorsivo}: Chiamata a sé stessa ma con un "problema più piccolo" (es. \texttt{n - 1}).
+    \end{enumerate}
+\end{itemize}
+\begin{jsbox}[title={Snippet: Ricorsione Base (Fattoriale)}]
+function fattoriale(n) {
+    if (n <= 1) return 1; // Caso Base
+    return n * fattoriale(n - 1); // Passo Ricorsivo
+}
+\end{jsbox}
+
+\subsection{Lezioni 12-14: Liste Concatenate (Linked Lists)}
+Strutture dati dinamiche in cui ogni nodo punta al successivo.
+
+\begin{jsbox}[title={Snippet: Definizione e Ricorsione su Liste}]
+// Nodo Base
+function NodoList(val, next = null) {
+    this.val = val; 
+    this.next = next;
+}
+let lista = new NodoList(1, new NodoList(2, new NodoList(3))); // 1 -> 2 -> 3
+
+// Calcolare la lunghezza (Ricorsivo)
+function length(l) {
+    if (!l) return 0;
+    return 1 + length(l.next);
+}
+
+// Stampa tutti gli elementi (Ricorsivo)
+function printList(l) {
+    if (!l) return;
+    console.log(l.val);
+    printList(l.next);
+}
+\end{jsbox}
+
+\subsection{Lezioni 16-17: Array Avanzati e Funzioni di Ordine Superiore}
+Metodi costosi ma potentissimi. NON mutanti (tranne \texttt{sort} o simili esplicitati), restituiscono copie calcolate e permettono composizione.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|p{5cm}|l|}
+\hline
+\textbf{Metodo (HOF)} & \textbf{Descrizione} & \textbf{Ritorna} \\
+\hline
+\texttt{forEach(fn)} & Esegue \texttt{fn} su ogni elemento \textit{(Sostituto del for-loop)}. & \texttt{undefined} \\
+\hline
+\texttt{map(fn)} & Trasforma ogni elemento. \textit{(Stessa lunghezza!)} & \textbf{Nuovo Array} \\
+\hline
+\texttt{filter(fn)} & Mantiene solo elementi per cui \texttt{fn===true}. & \textbf{Nuovo Array} \\
+\hline
+\texttt{reduce(fn, acc)} & Accumula in un singolo valore. ES: \texttt{(acc, e)=>(acc+e)}. & \textbf{Valore / Array / Obj} \\
+\hline
+\texttt{every(fn)} / \texttt{some(fn)} & Rispettivamente "Tutti" e "Almeno 1" passano il test \texttt{fn}. & Booleano (\texttt{true/false}) \\
+\hline
+\texttt{find(fn)} & Trova il \textbf{primo} elemento che passa la funzione \texttt{fn}. & Elemento o \texttt{undefined} \\
+\hline
+\texttt{findIndex(fn)} & Trova l'\textbf{indice} del primo elemento che passa \texttt{fn}. & Indice numerico o \texttt{-1} \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{jsbox}[title={Snippet: Array Chaining e Reduce Avanzato}]
+let a = [1, 2, 3, 4, -5];
+
+// Array Chaining (Concatenare i metodi restituenti Array)
+let r = a.filter(v => v > 0).map(v => v * 10); // [10, 20, 30, 40]
+
+// Somma con reduce
+let somma = a.reduce((acc, curr) => acc + curr, 0); 
+\end{jsbox}
+
+\subsection{Lezione 18: Alberi Binari}
+\begin{jsbox}[title={Snippet: Nodo e Visite (Pre, In, Post-Order)}]
+function NodoBin(val, sx = null, dx = null) {
+    this.val = val; this.sx = sx; this.dx = dx;
+}
+
+// Visita Ricorsiva Pre-Order
+function dfs(root) {
+    if (!root) return;
+    console.log(root.val); // Root
+    dfs(root.sx);          // Left
+    dfs(root.dx);          // Right
+}
+// Visita BFS (Ampiezza / Iterativa tramite Coda)
+function bfs(root) {
+    let coda = [root];
+    while(coda.length > 0) {
+        let n = coda.shift(); // Estrae dalla testa della coda
+        if(n) {
+            console.log(n.val);
+            if(n.sx) coda.push(n.sx); // Accoda
+            if(n.dx) coda.push(n.dx);
+        }
+    }
+}
+\end{jsbox}
+
+%============================
+% PART 3: Lezioni 20-28
+%============================
+\subsection{Lezioni 20-21: Grafi e Reti}
+Rappresentazione tramite \textbf{Liste di Adiacenza} (Mappe o Oggetti in cui la chiave è il nodo e il valore è l'array dei vicini).
+\begin{jsbox}[title={Snippet: Visita Grafo (DFS) con Set dei Visitati}]
+const grafo = { 'A': ['B','C'], 'B': ['A'], 'C': ['A'] };
+
+function dfs_grafo(nodo, visitati = new Set()) {
+    if (visitati.has(nodo)) return; // Ciclo evitato!
+    console.log(nodo);
+    visitati.add(nodo);
+    
+    for (let vicino of grafo[nodo]) {
+        dfs_grafo(vicino, visitati);
+    }
+}
+\end{jsbox}
+
+\subsection{Lezioni 22-26: Identità Oggetti, Prototipi, Classi e Moduli}
+\begin{itemize}
+    \item \textbf{Identity}: Due oggetti sono uguali (\texttt{obj1 === obj2}) SOLO se occupano la stessa locazione di memoria, NON se hanno le stesse proprietà.
+    \item \textbf{Prototipi e \texttt{new}}: Ogni oggetto ha una proprietà nascosta \texttt{\_\_proto\_\_}. Quando usiamo \texttt{new Funzione()}, JavaScript crea un oggetto e gli assegna come \texttt{\_\_proto\_\_} la proprietà \texttt{Funzione.prototype}.
+    \item \textbf{Accessors System}: I \texttt{get} e \texttt{set} permettono di nascondere computazioni complesse dietro al mascheramento di semplici attributi.
+    \item \textbf{Moduli}: Divisione in file (\texttt{export} e \texttt{import}).
+\end{itemize}
+
+\begin{jsbox}[title={Snippet: Classi (ES6) ed Ereditarietà}]
+class Animale {
+    constructor(nome) { this.nome = nome; }
+    verso() { console.log("..."); }
+}
+class Cane extends Animale {
+    static specie = "Canis lupus familiaris"; // Statico, appartiene a 'Cane'
+    #fame = 100;                              // Privato, accessibile solo qui dentro
+    
+    constructor(nome, razza) {
+        super(nome); // Obbligatorio! Richiama parent constructor
+        this.razza = razza;
+    }
+    
+    get fame() { return this.#fame; } // Getter
+    verso() { console.log("Bau"); } // Overriding del metodo
+}
+\end{jsbox}
+
+\subsection{Lezione 27: Gestione delle Eccezioni}
+Permette di riprendersi da errori letali o segnalare inconsistenze (es. parametri sbagliati in ingresso).
+\begin{jsbox}[title={Snippet: Costrutto Try-Catch-Finally ed Errori Custom}]
+class ParametroErrato extends Error { } // Custom Error
+
+function calcolaArea(lato) {
+    if (lato <= 0) throw new ParametroErrato("Il lato deve essere positivo"); // Lancia eccezione
+    return lato * lato;
+}
+
+try {
+    let r = calcolaArea(-5);
+} catch (e) {
+    if (e instanceof ParametroErrato) console.log("Errore specifico: " + e.message);
+    else throw e; // Rilancia errori inaspettati (es. Syntax Error)
+} finally {
+    console.log("Eseguito sempre, errore o meno. Ottimo per chiudere i file.");
+}
+\end{jsbox}
+
+\subsection{Lezione 28: Generatori ed Utilities Esercitazioni}
+I generatori sono funzioni che possono essere messe in pausa (\texttt{yield}) e riprese (\texttt{next()}).
+
+\begin{jsbox}[title={Snippet: Function* e Yield}]
+function* range(min, max) {
+    for (let i = min; i <= max; i++) {
+        yield i; // Pausa e restituisci 'i'
+    }
+}
+// Utilizzo (Iteratore lazy):
+for (let n of range(1, 3)) console.log(n); // Stampa 1, 2, 3
+\end{jsbox}
+
+\ifx\isStandalone\undefined
+\end{document}
+\fi

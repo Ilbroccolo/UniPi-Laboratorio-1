@@ -1,0 +1,192 @@
+\section{Oggetti Predefiniti (Built-in)}
+Abbiamo usato sin dall'inizio del corso un certo numero di oggetti predefiniti. Nota bene: le classi sono funzioni che sono oggetti, quindi con "oggetti predefiniti" intendiamo anche alcune classi. Esempi includono Number, Math, console, Error, ecc. Lo standard JavaScript include molti altri oggetti documentati su MDN Web Docs.
+
+\subsection{Wrapper di Tipi Base}
+Per ogni tipo base di JavaScript, esiste una classe wrapper con lo stesso nome (ma iniziale maiuscola). Questi includono Number, Boolean, String, BigInt. 
+
+\begin{definition}{Costruttori e Conversioni}
+I costruttori prendono un argomento di tipo qualunque e provano a convertilo nel tipo corrispondente, se possibile.
+\begin{itemize}
+    \item \texttt{Number("1.33") === 1.33} 
+    \item \texttt{String(14) === "14"} 
+    \item \texttt{Boolean("hello!") === true} 
+\end{itemize}
+\end{definition}
+
+Le classi offrono costanti e metodi statici. Ad esempio, \texttt{Number.EPSILON} rappresenta la differenza fra 1 e il più piccolo numero $>1$. \texttt{Number.isFinite(3.14)} restituisce \texttt{true}.
+
+Gli oggetti offrono metodi d'istanza, come \texttt{Number(3.14).toFixed(4)} che restituisce \texttt{'3.1400'}. Mentre le costanti letterali numeriche non vengono automaticamente promosse ad oggetti, quelle stringa e boolean sì.
+
+\subsection{Date}
+\begin{definition}{Classe Date}
+La classe Date fornisce oggetti che rappresentano date di calendario, nel range dal 20 Aprile 271.821 a.C. al 13 Settembre 275.760 d.C. Gli oggetti Date sono sostanzialmente numeri, espressi in millisecondi dal 1 Gennaio 1970.
+\end{definition}
+
+Il costruttore cerca di interpretare date espresse come stringhe, in una varietà di formati. Senza argomenti, restituisce data e ora correnti. Con numeri, li interpreta come anno, mese, giorno, ora, minuti, secondi, millisecondi. \textbf{Attenzione:} il mese parte da $0 = \text{Gennaio}$, quindi 3 è Aprile.
+
+\begin{jsbox}[title={Esempi Date}]
+new Date() // Data corrente
+new Date("19 marzo") 
+new Date(2021,3,19,14,15) 
+let a = new Date("19 marzo 2021")
+let b = new Date(2021, 3, 19, 14, 15)
+let diff = (b-a)/(24*60*60*1000) // Aritmetica supportata
+\end{jsbox}
+
+Metodi d'istanza per le stringhe:
+\begin{itemize}
+    \item \texttt{a.toISOString()} 
+    \item \texttt{a.toUTCString()} 
+    \item \texttt{a.toLocaleString()} 
+\end{itemize}
+
+\subsection{RegExp (Espressioni Regolari)}
+Le espressioni regolari sono un modo per esprimere schemi di corrispondenza su stringhe. Godono di una denotazione letterale usando \texttt{//}.
+
+\begin{jsbox}[title={RegExp}]
+let e = new RegExp("[a-z]+") // oppure let e = /[a-z]+/
+e.test("pippo") // true (tutte lettere minuscole)
+e.test("1337") // false (solo numeri)
+\end{jsbox}
+
+Il metodo \texttt{e.exec(s)} fornisce informazioni complete; esistono l'analogo \texttt{s.match(e)} e \texttt{s.matchAll(e)} che restituisce un iteratore su tutti i match.
+
+\begin{definition}{Sintassi RegExp e Flag}
+Le RegExp possono avere ulteriori flag: \texttt{/g} (tutte le occorrenze), \texttt{/i} (ignora maiuscole/minuscole), \texttt{/m} (più linee).\\
+Sintassi fondamentale:
+\begin{itemize}
+    \item \texttt{/[abc]/}: Any character from a set.
+    \item \texttt{/[0-9]/}: Range of characters.
+    \item \texttt{/x+/}: One or more occurrences.
+    \item \texttt{/x*/}: Zero or more occurrences.
+    \item \texttt{/\textbackslash d/}: Any digit character.
+    \item \texttt{/\textbackslash s/}: Any whitespace.
+\end{itemize}
+\end{definition}
+
+\subsection{Array con tipi di macchina (Typed Array)}
+Per implementare algoritmi o scambiare dati (via file o rete), è necessario manipolare blocchi di memoria di dimensione esattamente specificata. Tipi disponibili: \texttt{Int8Array, Int16Array, Int32Array, Uint8Array, Uint16Array, Uint32Array, BigInt64Array, BigUint64Array, Float32Array, Float64Array}. Offrono metodi per convertire da normali array JS e vi si accede sapendo quali byte di memoria saranno letti o scritti.
+
+\subsection{Collections: Set e Map}
+\begin{definition}{Set}
+La classe Set implementa insiemi di valori qualunque. A differenza degli oggetti dove le chiavi sono stringhe, nei Set le chiavi possono essere funzioni o oggetti. Metodi: \texttt{add(e), delete(e), clear(), has(e), values(), forEach(f)} e operazioni insiemistiche come \texttt{difference, intersection, union}.
+\end{definition}
+
+\begin{definition}{Map}
+La classe Map associa chiavi di qualunque tipo a valori di qualunque tipo. Metodi: \texttt{set(k,v), delete(k), clear(), has(k), get(k), keys(), values(), entries()}.
+\end{definition}
+
+\section{JSON e Oggetti dell'Ambiente}
+JSON (JavaScript Object Notation) è un formato di serializzazione per trasformare un oggetto in stringa e viceversa. Facilmente leggibile da programmi ed umani. Metodi statici: \texttt{JSON.stringify(o)} e \texttt{JSON.parse(s)}. Gli oggetti JavaScript "semplici" sono detti POJO (Plain Old JavaScript Object).
+
+\begin{definition}{Oggetti Host-defined}
+Ogni ambiente di esecuzione (host) fornisce nomi predefiniti nello scope globale.
+\begin{itemize}
+    \item \textbf{Browser:} document, window, location.
+    \item \textbf{AppScript:} CalendarApp, DriveApp.
+    \item \textbf{Node.js:} console, process.
+\end{itemize}
+\end{definition}
+
+\section{Moduli utili in Node.js}
+\subsection{Modulo \texttt{fs} (File System)}
+Contiene funzioni per leggere/scrivere file e directory, modificare metadati, creare o cancellare. 
+
+\begin{jsbox}[title={Esempio Sincrono}]
+const fs = require('fs')
+var s = fs.readFileSync('index.js') // stringhe, Buffer o Typed array
+console.log(s.toString())
+fs.writeFileSync("/myfiles/test.txt", "Contenuto file")
+\end{jsbox}
+
+L'approccio sincrono carica tutto in una stringa (inadatto per file grandi). L'approccio asincrono processa in blocchi (chunk) via callback:
+\begin{jsbox}[title={Esempio Asincrono}]
+fs.readFile('dante.txt', 'utf-8', 
+  (err, data) => console.log(err, data.substr(0,100))
+)
+\end{jsbox}
+I callback vengono chiamati nel futuro e fuori ordine (man mano che arrivano i dati).
+
+\subsection{Moduli \texttt{os} e \texttt{process}}
+\begin{itemize}
+    \item \textbf{os}: Informazioni su macchina, OS e utente. Funzioni: \texttt{os.hostname(), os.networkInterfaces(), os.userInfo(), os.platform(), os.arch(), os.totalmem(), os.cpus()}.
+    \item \textbf{process}: Info sul processo in esecuzione. Argomenti riga di comando, variabili d'ambiente (\texttt{process.env}), manipolazione altri processi.
+\end{itemize}
+
+\subsection{Moduli \texttt{url} e \texttt{http}}
+Forniscono funzioni per parsing di URL e per protocollo HTTP. Utili per implementare server web:
+
+\begin{jsbox}[title={Server Web HTTP}]
+const http = require('http')
+var server = http.createServer(function(req, res) {
+  res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'})
+  res.end("Risposta HTTP calcolata")
+})
+server.listen(1337);
+\end{jsbox}
+
+Approccio a eventi (stream) per letture di rete: \texttt{res.on('data', chunk => \{ ... \})}.
+
+\section{Il Sistema dei Moduli in JavaScript}
+\subsection{Perché i Moduli?}
+Dividere il sorgente in più file serve a:
+\begin{itemize}
+    \item \textbf{Tenere ordinate le cose}: Gruppi di funzioni lavorano insieme.
+    \item \textbf{Riutilizzare codice}: Funzioni d'uso generale condivisibili tra programmi.
+    \item \textbf{Distribuire responsabilità}: Lavoro in team su file separati.
+\end{itemize}
+
+\subsection{Funzionamento e Implementazioni}
+Un modulo è un file sorgente contenente dichiarazioni, con istruzioni specifiche per indicare cosa esportare (visibile all'esterno) e cosa mantenere privato. Il codice che usa il modulo le \emph{importa}.
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm and 2cm,
+    modulebox/.style={rectangle, draw=black, fill=gray!20, thick, minimum width=3cm, minimum height=1cm, align=center, rounded corners},
+    arrow/.style={-{Stealth[scale=1.2]}, thick, black}
+]
+    \node[modulebox] (mod) {\textbf{modulo.js}\\Dichiarazioni};
+    \node[modulebox, right=of mod] (prog) {\textbf{prog.js}\\Codice Principale};
+    \draw[arrow] (mod.north east) to[bend left] node[above, font=\footnotesize] {\texttt{export} / \texttt{exports}} (prog.north west);
+    \draw[arrow] (prog.south west) to[bend left] node[below, font=\footnotesize] {\texttt{import} / \texttt{require}} (mod.south east);
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{JS "Tradizionale" (CommonJS)}
+\begin{jsbox}[title={Implementazione Require/Exports}]
+// modulo.js
+function f2(n) { /*...*/ }
+const PIGRECO = 4;
+exports.fun = f2;
+exports.pi = PIGRECO;
+
+// prog.js
+const mod = require('./modulo')
+console.log(mod.fun(5))
+\end{jsbox}
+
+\subsubsection{JS "Moderno" (ES6)}
+Import ed export manipolano l'oggetto esportato. Esiste un "export di default" (uno per modulo).
+
+\begin{jsbox}[title={Implementazione Import/Export}]
+// modulo.js
+export function f2(n) { /*...*/ }
+export const PIGRECO = 4;
+export default class Studente { /*...*/ }
+
+// prog.js
+import * as mod from './modulo.js'
+import { f2 as fun, PIGRECO } from './modulo.js'
+console.log(fun(5))
+\end{jsbox}
+
+\begin{definition}{Particolarità dei Moduli}
+\begin{itemize}
+    \item Se un file è un modulo (contiene \texttt{export}), è in \textbf{strict mode} automaticamente.
+    \item La stringa del modulo può essere: un path-name server, un indirizzo web (URL), o un nome semplice per librerie di sistema (es. "fs").
+    \item Sono ammesse \textbf{solo stringhe letterali}, non template literals.
+    \item Il sistema tiene in memoria \textbf{una sola copia} del modulo anche se importato più volte.
+\end{itemize}
+\end{definition}
+
+Su piattaforme come \textbf{JDoodle}, i moduli ES6 richiedono \texttt{"type": "module"} nel \texttt{package.json}. Per aggiungere librerie esterne, si usa il gestore NPM (es. \texttt{mathjs}).

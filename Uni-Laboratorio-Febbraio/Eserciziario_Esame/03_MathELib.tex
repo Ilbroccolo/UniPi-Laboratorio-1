@@ -1,0 +1,91 @@
+\section{Capitolo 3: Concetti Matematici e Algoritmi}
+
+\begin{esercizio}{Es. 9: Funzione Iniettiva (Verifica Collisioni)}
+\textbf{TRACCIA:} Data una funzione `f(x)` e un dominio (array di input) `D`, scrivere `isIniettiva(f, D)` che restituisce `true` se la funzione non produce mai lo stesso output per due input diversi in D.
+\end{esercizio}
+
+\begin{jsbox}
+function isIniettiva(f, dominio) {
+    let immaginiViste = new Set();
+    
+    for (let x of dominio) {
+        let y = f(x); // Calcolo immagine
+        
+        if (immaginiViste.has(y)) {
+            return false; // Collisione trovata! (Due x danno la stessa y)
+        }
+        immaginiViste.add(y);
+    }
+    return true; // Nessuna collisione
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 10: Convoluzione Discreta (Semplificata)}
+\textbf{TRACCIA:} Dati due array `A` e `B` della stessa lunghezza, calcolare il prodotto scalare (somma dei prodotti elemento per elemento).
+$S = \sum (A[i] \cdot B[i])$
+\end{esercizio}
+
+\begin{jsbox}
+function prodottoScalare(A, B) {
+    let somma = 0;
+    // Assumiamo A.length === B.length
+    for (let i = 0; i < A.length; i++) {
+        somma += A[i] * B[i];
+    }
+    return somma;
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 11: Punto Fisso}
+\textbf{TRACCIA:} Scrivere `trovaPuntoFisso(f, min, max)` che cerca se esiste un numero intero $x$ tra `min` e `max` tale che $f(x) == x$. Se esiste ritornalo, altrimenti `null`.
+\end{esercizio}
+
+\begin{jsbox}
+function trovaPuntoFisso(f, min, max) {
+    for (let x = min; x <= max; x++) {
+        if (f(x) === x) {
+            return x; // Trovato!
+        }
+    }
+    return null;
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 12: Numeri Triangolari Ricorsivi}
+\textbf{TRACCIA:} L'n-esimo numero triangolare è la somma dei numeri da 1 a n. Scrivere una funzione ricorsiva.
+\end{esercizio}
+
+\begin{jsbox}
+function triangolare(n) {
+    if (n <= 0) return 0;
+    return n + triangolare(n - 1);
+}
+// Esempio: T(3) = 3 + T(2) = 3 + 2 + T(1) = 3+2+1 = 6
+\begin{esercizio}{Es. 23: Numero Primo (IsPrime)}
+\textbf{TRACCIA:} Scrivere `isPrime(n)` che torna true se $n$ è primo.
+\textit{Ricorda: 1 non è primo. Basta controllare fino a $\sqrt{n}$.}
+\end{esercizio}
+
+\begin{jsbox}
+function isPrime(n) {
+    if (n < 2) return false;
+    
+    // Ottimizzazione: fino alla radice quadrata
+    for (let i = 2; i * i <= n; i++) {
+        if (n % i === 0) return false; // Divisibile
+    }
+    return true;
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 24: MCD (Algoritmo di Euclide)}
+\textbf{TRACCIA:} Calcolare il Massimo Comune Divisore tra `a` e `b`.
+\textit{Algoritmo: Se b=0, MCD è a. Altrimenti MCD(b, a \% b).}
+\end{esercizio}
+
+\begin{jsbox}
+function mcd(a, b) {
+    if (b === 0) return a;
+    return mcd(b, a % b);
+}
+\end{jsbox}

@@ -1,0 +1,72 @@
+\section{Liste Concatenate: Esercizi Avanzati (Lab 13)}
+
+\subsection{Manipolazione di Liste}
+
+\subsubsection{1. Elemento N-esimo (listNth)}
+\begin{concept}{Accesso Sequenziale}
+Trovare l'elemento all'indice `n` riducendo `n` ad ogni passo.
+\end{concept}
+\begin{jsbox}
+function listNth(nodo, n) {
+    if (!nodo) return null;
+    if (n === 0) return nodo; // Arrivati!
+    return listNth(nodo.next, n - 1);
+}
+\end{jsbox}
+
+\subsubsection{2. Verifica Ordinamento (listIsSorted)}
+\begin{concept}{Verifica Monotona}
+Controllare se ogni nodo è minore del successivo.
+\end{concept}
+\begin{jsbox}
+function listIsSorted(nodo) {
+    if (!nodo || !nodo.next) return true; // 0 o 1 elemento: OK
+    
+    // Se il corrente è maggiore del prossimo -> Falso
+    if (nodo.val > nodo.next.val) return false;
+    
+    // Controllo il resto
+    return listIsSorted(nodo.next);
+}
+\end{jsbox}
+
+\subsubsection{3. Mappare valori (listMap)}
+\begin{concept}{Mappatura Ricorsiva}
+Creare una NUOVA lista applicando $f(x)$ a ogni nodo.
+\end{concept}
+\begin{jsbox}
+function listMap(nodo, f) {
+    if (!nodo) return null;
+    
+    return {
+        val: f(nodo.val),       // Trasformo il valore
+        next: listMap(nodo.next, f) // Ricorro sul resto
+    };
+}
+\end{jsbox}
+
+\subsubsection{4. Rimuovere pezzi (listSplice)}
+\begin{concept}{Taglio Chirurgico}
+Rimuovere `count` nodi a partire dalla posizione `start`.
+Ci sono 3 casi: Prima del taglio, Nel taglio, Fine.
+\end{concept}
+\begin{jsbox}
+function listSplice(nodo, start, count) {
+    if (!nodo) return null; // Fine lista
+    
+    // Caso 1: Devo ancora arrivare al punto di taglio
+    if (start > 0) {
+        nodo.next = listSplice(nodo.next, start - 1, count);
+        return nodo;
+    }
+    
+    // Caso 2: Sono nel punto di taglio, devo rimuovere
+    if (count > 0) {
+        // Salto 'nodo' e chiamo la funzione sul prossimo
+        return listSplice(nodo.next, 0, count - 1);
+    }
+    
+    // Caso 3: Finito di tagliare (count == 0)
+    return nodo;
+}
+\end{jsbox}

@@ -1,0 +1,114 @@
+\section{Ripasso e Approfondimento Liste (Lab 14)}
+
+In questo laboratorio rivediamo le operazioni fondamentali sulle liste concatenate e affrontiamo esercizi ricorsivi più complessi.
+
+\subsection{Operazioni di Base (Ripasso)}
+
+\subsubsection{1. Ricerca (listFind)}
+\begin{concept}{Trova Primo}
+Trova il primo nodo che contiene \texttt{value}.
+\end{concept}
+\begin{jsbox}
+function listFind(head, value) {
+    if (!head) return null; // Non trovato
+    if (head.val === value) return head; // Trovato!
+    return listFind(head.next, value); // Cerca nel resto
+}
+\end{jsbox}
+
+\subsubsection{2. Inserimento Centrale (listInsert)}
+\begin{concept}{Chirurgia dei Puntatori}
+Inserisce un nuovo valore SUBITO DOPO il nodo \texttt{x}, aggiornando i puntatori.
+\end{concept}
+\begin{jsbox}
+function listInsert(x, value) {
+    if (!x) return;
+    
+    // 1. Creo il nuovo nodo che punta al vecchio 'next' di x
+    let nuovo = { val: value, next: x.next };
+    
+    // 2. Aggiorno x per puntare al nuovo
+    x.next = nuovo;
+}
+\end{jsbox}
+
+\subsubsection{3. Aggiunta in Coda (listPush con Insert)}
+\begin{concept}{Discesa Ricorsiva}
+Scende fino all'ultimo nodo e usa \texttt{listInsert}.
+\end{concept}
+\begin{jsbox}
+function listPush(head, value) {
+    if (!head) return { val: value, next: null }; // Lista vuota
+    
+    // Se è l'ultimo nodo (next è null)
+    if (!head.next) {
+        listInsert(head, value); // Appendo qui
+        return head;
+    }
+    
+    listPush(head.next, value); // Scendo ancora
+    return head;
+}
+\end{jsbox}
+
+\subsection{Esercizi Ricorsivi Avanzati}
+
+\subsubsection{1. Verifica Uguaglianza (listEquals)}
+\begin{concept}{Confronto Strutturale}
+Due liste sono uguali se hanno la stessa lunghezza e gli stessi valori nello stesso ordine.
+\end{concept}
+\begin{jsbox}
+function listEquals(l1, l2) {
+    // Caso Base: Entrambe finite contemporaneamente -> OK
+    if (!l1 && !l2) return true;
+    
+    // Caso Base: Una finita e l'altra no -> DIVERSE
+    if (!l1 || !l2) return false;
+    
+    // Controllo valore corrente E ricorsione
+    return (l1.val === l2.val) && listEquals(l1.next, l2.next);
+}
+\end{jsbox}
+
+\subsubsection{2. Rimozione con Taglio (listSplice)}
+\begin{concept}{Taglio e Ritorno}
+Rimuove \texttt{deleteCount} nodi a partire da \texttt{start}.
+\end{concept}
+\begin{jsbox}
+function listSplice(head, start, deleteCount) {
+    if (!head) return null;
+
+    // Caso 1: Non siamo ancora arrivati al punto di taglio
+    if (start > 0) {
+        // Ricostruisco il nodo corrente e vado avanti
+        return {
+            val: head.val,
+            next: listSplice(head.next, start - 1, deleteCount)
+        };
+    }
+
+    // Caso 2: Siamo nel punto di taglio (start == 0)
+    if (deleteCount > 0) {
+        // SALTO questo nodo (non lo ritorno).
+        // Chiedo alla ricorsione di rimuoverne ancora (count - 1)
+        return listSplice(head.next, 0, deleteCount - 1);
+    }
+
+    // Caso 3: Finito di tagliare, ritorno il resto
+    return head;
+}
+\end{jsbox}
+
+\subsubsection{3. Mappa Ricorsiva (listMap)}
+\begin{concept}{Trasformazione}
+Crea una copia trasformata della lista.
+\end{concept}
+\begin{jsbox}
+function listMap(head, f) {
+    if (!head) return null;
+    return {
+        val: f(head.val),             // Trasformo valore
+        next: listMap(head.next, f)   // Ricorro
+    };
+}
+\end{jsbox}

@@ -1,0 +1,122 @@
+\section{Il Sottobosco: Binario e Numeri (Rif: Slide Lezione 08)}
+
+\section{Stringhe, JSON e Metodi Funzionali (Lez. 08-09)}
+
+\subsection{Metodi per le Stringhe}
+Le stringhe in JS sono primitive, ma hanno molti metodi utili per lavorarci.
+Ricorda: le stringhe \textbf{non} cambiano mai (sono immutabili). Ogni metodo ne restituisce una nuova.
+
+\begin{concept}{Immutabilità delle Stringhe}
+Le stringhe in JS sono primitive e non cambiano mai. I metodi ritornano sempre una **nuova** stringa.
+\end{concept}
+\begin{jsbox}
+let testo = "Ciao Mondo";
+
+// Estrazione
+let parte = testo.slice(0, 4); // "Ciao"
+let sub = testo.substring(0, 4); // "Ciao"
+
+// Ricerca
+let pos = testo.indexOf("Mondo"); // 5
+
+// Trasformazione
+let maiusc = testo.toUpperCase(); // "CIAO MONDO"
+let pulito = "  ciao  ".trim(); // "ciao" (toglie spazi ai lati)
+
+// Padding (utile per formattare)
+let num = "5";
+console.log(num.padStart(4, "0")); // "0005"
+\end{jsbox}
+
+\subsection{JSON (JavaScript Object Notation)}
+\begin{concept}{Serializzazione}
+Il JSON è un formato testuale standard. Serve per convertire oggetti in stringhe (per inviarli) e viceversa.
+\end{concept}
+\begin{jsbox}
+let studente = { nome: "Luca", eta: 20 };
+
+// Da Oggetto a Stringa (per inviarlo o salvarlo)
+let stringaJSON = JSON.stringify(studente);
+console.log(stringaJSON); // '{"nome":"Luca","eta":20}'
+
+// Da Stringa a Oggetto (quando ricevi dati)
+let datiRicevuti = '{"nome":"Marco","eta":22}';
+let nuovoStudente = JSON.parse(datiRicevuti);
+console.log(nuovoStudente.nome); // "Marco"
+\end{jsbox}
+
+\subsection{Metodi Avanzati degli Array (Map, Filter, Reduce)}
+Invece di usare sempre il ciclo \texttt{for}, JavaScript offre metodi potenti per manipolare gli array.
+
+\subsubsection{1. Map (Trasformare)}
+\begin{concept}{Mappatura 1-a-1}
+Crea un \textbf{NUOVO} array applicando una funzione a ogni elemento. La lunghezza non cambia.
+\end{concept}
+\begin{jsbox}
+const numeri = [1, 2, 3, 4];
+const doppi = numeri.map(x => x * 2);
+console.log(doppi); // [2, 4, 6, 8]
+\end{jsbox}
+
+\subsubsection{2. Filter (Filtrare)}
+\begin{concept}{Selezione Logica}
+Crea un \textbf{NUOVO} array con solo gli elementi che superano un test (restituiscono true).
+\end{concept}
+\begin{jsbox}
+const voti = [18, 25, 15, 30, 12];
+const promossi = voti.filter(voto => voto >= 18);
+console.log(promossi); // [18, 25, 30]
+\end{jsbox}
+
+\subsubsection{3. Reduce (Ridurre/Accumulare)}
+\begin{concept}{Aggregazione N-a-1}
+Riduce tutto l'array a un singolo valore (es. somma, media) usando un accumulatore.
+\end{concept}
+\begin{jsbox}
+const prezzi = [10, 20, 30];
+// tot inizia a 0. Per ogni 'p' (prezzo), facciamo tot + p
+const totale = prezzi.reduce((tot, p) => tot + p, 0);
+console.log(totale); // 60
+\end{jsbox}
+
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+
+\subsection{Bitwise Operators: Manipolare i Bit}
+
+\subsubsection*{1. IL CONCETTO}
+Possiamo manipolare i singoli bit di un numero. È una roba da bassa lega (driver, protocolli di rete, flag), ma utile per capire come ragiona la macchina.
+
+\subsubsection*{2. GLI OPERATORI}
+\begin{itemize}
+    \item \texttt{\&} (AND): Entrambi 1.
+    \item \texttt{|} (OR): Almeno uno 1.
+    \item \texttt{\^} (XOR): Diversi (uno 1 e l'altro 0).
+    \item \texttt{\textasciitilde} (NOT): Inverte tutto.
+\end{itemize}
+
+\subsubsection*{3. CODICE E ANALISI}
+\begin{concept}{Maschere di Bit (Flags)}
+Usiamo i bit come interruttori on/off compatti.
+\end{concept}
+\begin{jsbox}
+// Maschere di bit (Flags)
+const LETTURA = 1;  // 001
+const SCRITTURA = 2; // 010
+const ESECUZIONE = 4; // 100
+
+let permessi = LETTURA | SCRITTURA; // 011 (3)
+
+// Controllo: Ho il permesso di lettura?
+if (permessi & LETTURA) {
+    console.log("Puoi leggere");
+}
+\end{jsbox}
+
+\subsubsection*{5. TRAPPOLE E ERRORI DI DISTRAZIONE}
+\begin{itemize}
+    \item Scambiare \texttt{\&} (Bitwise) con \texttt{\&\&} (Logico).
+    \begin{itemize}
+        \item \texttt{1 \& 2} $\rightarrow$ \texttt{0} (01 \& 10 non hanno bit comuni).
+        \item \texttt{1 \&\& 2} $\rightarrow$ \texttt{2} (True \&\& True $\rightarrow$ restituisce l'ultimo valore).
+    \end{itemize}
+\end{itemize}

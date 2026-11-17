@@ -1,0 +1,100 @@
+\section{Funzioni, Scope e Stack (Lez. 06-07)}
+
+\subsection{Cosa sono le Funzioni}
+Una funzione è un blocco di codice progettato per eseguire un compito specifico. La esegui "chiamandola" (invocandola).
+Serve a non dover riscrivere lo stesso codice tante volte.
+
+\begin{concept}{Definizione Funzione}
+Una funzione è un blocco di codice progettato per eseguire un compito specifico. La esegui "chiamandola" (invocandola).
+\end{concept}
+\begin{jsbox}
+// Definizione
+function saluta(nome) {
+    return "Ciao " + nome + "!";
+}
+
+// Utilizzo
+let messaggio = saluta("Mario"); 
+console.log(messaggio); // Stampa: "Ciao Mario!"
+\end{jsbox}
+
+\subsection{Scope: Dove vivono le variabili}
+In JavaScript, le variabili non sono visibili ovunque. Dipende da dove le dichiari.
+
+\subsubsection{1. Block Scope (let, const)}
+\begin{concept}{Scope di Blocco (Recinto Privato)}
+Le variabili definite con \texttt{let} o \texttt{const} dentro un blocco \texttt{\{ \}} (come un if o un for) esistono \textbf{solo lì dentro}.
+\end{concept}
+\begin{jsbox}
+// Scope limitato (dentro un blocco if)
+if (true) {
+    let x = 2;
+}
+// x qui non esiste piu'
+\end{jsbox}
+
+\subsubsection{2. Function Scope (var)}
+\begin{concept}{Scope di Funzione (Old School)}
+Le variabili definite con \texttt{var} dentro una funzione sono visibili in tutta la funzione, ma non fuori.
+\end{concept}
+\begin{jsbox}
+function test() {
+    var car = "Fiat";
+}
+// car qui non esiste
+\end{jsbox}
+
+\subsection{Arrow Functions}
+\begin{concept}{Sintassi Concisa}
+Le Arrow Functions \texttt{() =>} semplificano la scrittura. Se c'è una sola espressione, il \texttt{return} è implicito.
+\end{concept}
+\begin{jsbox}
+// Prima
+let hello = function() {
+    return "Hello World!";
+}
+
+// Dopo (Arrow Function)
+let hello = () => {
+    return "Hello World!";
+}
+
+// Se hai una sola riga, puoi togliere le graffe e il return:
+let hello = () => "Hello World!";
+\end{jsbox}
+
+\subsection{Closures (Chiusure)}
+\begin{concept}{Memoria Persistente}
+Una closure è quando una funzione figlia "ricorda" le variabili dello scope padre anche dopo che il padre è terminato.
+\end{concept}
+\begin{jsbox}
+function creaContatore() {
+    let count = 0;
+    return function() {
+        count += 1; // Ricorda 'count'
+        return count;
+    }
+}
+
+const conta = creaContatore();
+console.log(conta()); // 1
+console.log(conta()); // 2
+console.log(conta()); // 3
+\end{jsbox}
+
+\subsection{Ricorsione}
+\begin{concept}{Funzione che chiama se stessa}
+È utile per risolvere problemi che si possono spezzare in problemi più piccoli uguali (come il Countdown).
+\end{concept}
+\begin{jsbox}
+function countdown(n) {
+    if (n <= 0) {
+        console.log("Via!");
+    } else {
+        console.log(n);
+        countdown(n - 1); // Chiama se stessa con n-1
+    }
+}
+countdown(3);
+// Output: 3, 2, 1, Via!
+\end{jsbox}

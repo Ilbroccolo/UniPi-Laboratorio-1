@@ -1,0 +1,114 @@
+\section{L'identità segreta degli oggetti}
+
+\subsection{Introduzione e Contenuti}
+Il laboratorio si focalizza sulla comprensione profonda degli oggetti in JavaScript, analizzando la differenza tra valore e riferimento, l'uso di costruttori, metodi, prototipi e classi.
+
+\subsection{Valori e Riferimenti}
+JavaScript gestisce i dati in due modi fondamentali in base alla loro natura (base o complessa).
+
+\begin{definition}[title={Tipi di dato e Semantica}]
+\textbf{Primitivi (Passaggio per Valore):} Number, String, Boolean, null, undefined, Symbol.
+Quando li assegni o li passi a una funzione, JS ne fa una \textbf{copia esatta}.
+\end{definition}
+
+\subsection{Meccanismi di Assegnamento e Uguaglianza}
+\begin{itemize}
+    \item \textbf{Per Valore:} L'assegnamento copia il valore; l'uguaglianza confronta il contenuto.
+    \item \textbf{Per Riferimento:} L'assegnamento copia il riferimento; l'uguaglianza (\texttt{==}) confronta se i riferimenti puntano alla stessa area di memoria (identità), non se i contenuti sono uguali.
+\end{itemize}
+
+\begin{jsbox}[title={Esempio Identità vs Uguaglianza}]
+var a = [1,2,3]; // Riferimento alfa
+var b = [1,2,3]; // Riferimento beta
+var c = a;       // Copia riferimento alfa
+
+a == b; // false (alfa != beta)
+a == c; // true  (alfa == alfa)
+\end{jsbox}
+
+\begin{concept}[title={Allocazione di Memoria}]
+Ogni volta che viene valutato un letterale (es. \texttt{[1,2,3]} o \texttt{\{...\}}), viene allocata una \textbf{nuova area di memoria} con un nuovo riferimento unico.
+\end{concept}
+
+\section{Modifica di Riferimenti e Funzioni}
+La condivisione di oggetti in memoria implica che modifiche effettuate tramite un riferimento siano visibili attraverso tutti gli altri puntatori allo stesso oggetto.
+
+\subsection{Passaggio di argomenti}
+JavaScript usa il \textbf{passaggio per valore} degli argomenti. Tuttavia:
+\begin{itemize}
+    \item Se passiamo un tipo base, la funzione lavora su una copia locale e non può modificare la variabile originale.
+    \item Se passiamo un riferimento, la funzione riceve una copia del riferimento. Può quindi modificare le proprietà dell'oggetto originale.
+\end{itemize}
+
+\begin{jsbox}[title={Modifica Oggetto Riferito}]
+function compleanno(p) { p.età++; }
+var pippo = {nome: "Pippo", età: 35}; // Riferimento alfa
+compleanno(pippo); // Passa alfa
+// pippo -> {nome: "Pippo", età: 36}
+\end{jsbox}
+
+\section{Strutture Dati Complesse: Grafi}
+A differenza degli alberi, dove ogni nodo compare in un solo posto (proprietà di unicità del padre), nei \textbf{grafi} lo stesso oggetto può comparire in più campi.
+
+\begin{definition}[title={Identità nel Grafo}]
+In un grafo $G = \langle N, E \rangle$:
+\begin{itemize}
+    \item \textbf{Nodi:} oggetti del tipo \texttt{\{ val: x \}}.
+    \item \textbf{Archi:} oggetti \texttt{\{ da: n1, a: n2 \}} dove \texttt{n1} e \texttt{n2} sono riferimenti ai nodi.
+\end{itemize}
+Per far sì che più archi puntino allo \textbf{stesso} nodo (identità), si usano i riferimenti alle variabili.
+\end{definition}
+
+\section{Funzioni, Metodi e Costruttori}
+
+\subsection{Sintassi abbreviata dei Metodi}
+Esistono tre modi per definire funzioni come proprietà di un oggetto:
+\begin{jsbox}[title={Sintassi Metodi}]
+var o = {
+    inc: x => x + 1,                    // Arrow function
+    dec: function(x) { return x - 1; }, // Classica
+    zero(x) { return x - x; }           // Abbreviata (Metodo)
+};
+\end{jsbox}
+
+\subsection{Oggetti Globali Pre-dichiarati}
+Variabili come \texttt{console} e \texttt{Math} sono \textbf{oggetti globali}.
+\begin{itemize}
+    \item \texttt{typeof console} $\rightarrow$ \texttt{"object"}.
+    \item \texttt{Math.max()} o \texttt{console.log()} sono proprietà di tipo funzione di questi oggetti.
+\end{itemize}
+
+\begin{curiosita}[title={Dinamicità}]
+È possibile aggiungere funzioni personalizzate a questi oggetti (es. \texttt{Math.fattoriale = ...}) per usarle nel resto del programma.
+\end{curiosita}
+
+\subsection{La parola chiave \texttt{this}}
+Quando una funzione è proprietà di un oggetto e vi accede internamente, viene chiamata \textbf{metodo}. Si usa \texttt{this} per riferirsi all'oggetto corrente.
+
+\begin{jsbox}[title={Uso di this}]
+persona.compleanno = function() { this.età++; };
+pippo.compleanno(); // 'this' punta a pippo
+\end{jsbox}
+
+\subsection{L'operatore \texttt{new}}
+Crea un nuovo oggetto vuoto, imposta \texttt{this} a tale oggetto nel costruttore e lo restituisce implicitamente.
+\begin{concept}[title={Convenzione Costruttori}]
+Le funzioni destinate a \texttt{new} iniziano con la \textbf{lettera maiuscola}.
+\end{concept}
+
+\section{Il Mistero dei Prototipi}
+Perché un array ha il metodo \texttt{.push()} se non è definito direttamente nell'oggetto?
+
+\begin{definition}[title={Meccanismo di Ricerca}]
+Ogni oggetto ha un \textbf{prototipo}. 
+\begin{enumerate}
+    \item Se cerco una chiave e non c'è nell'oggetto, JavaScript la cerca nel prototipo.
+    \item Si risale la \textbf{catena dei prototipi} fino a \texttt{Object.prototype}.
+    \item Se la chiave non esiste in tutta la catena, il risultato è \texttt{undefined}.
+\end{enumerate}
+\end{definition}
+
+Il prototipo di un oggetto si ottiene con \texttt{Object.getPrototypeOf(o)} o tramite la proprietà speciale \texttt{\_\_proto\_\_}. L'oggetto prototipo degli array contiene tutti i metodi standard: \textit{push, pop, map, filter, etc.}.
+
+\section{Conclusione: Verso le Classi}
+Il meccanismo dei prototipi e dei costruttori è la base per l'uso delle \textbf{Classi} in JavaScript, tema centrale della prossima lezione.

@@ -1,0 +1,89 @@
+\section{Capitolo 18: Alberi Binari e BST}
+
+\begin{dizionario}{BST (Binary Search Tree)}
+Albero dove per ogni nodo:
+- Tutti i valori a \textbf{Sinistra} sono minori.
+- Tutti i valori a \textbf{Destra} sono maggiori.
+Permette ricerche veloci (come la ricerca binaria).
+\end{dizionario}
+
+\begin{esercizio}{Es. 36: Conteggio Nodi}
+\textbf{TRACCIA:} Scrivere una funzione ricorsiva che conta quanti nodi ci sono in totale nell'albero.
+\end{esercizio}
+
+\begin{jsbox}
+function contaNodi(root) {
+    if (!root) return 0;
+    return 1 + contaNodi(root.sx) + contaNodi(root.dx);
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 37: Altezza Albero}
+\textbf{TRACCIA:} Calcolare l'altezza dell'albero (il percorso più lungo dalla radice a una foglia).
+\end{esercizio}
+
+\begin{jsbox}
+function altezza(root) {
+    if (!root) return -1; // O 0, dipende dalla definizione. Qui -1 per albero vuoto.
+    
+    let hSx = altezza(root.sx);
+    let hDx = altezza(root.dx);
+    
+    return 1 + Math.max(hSx, hDx);
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 38: Verifica BST}
+\textbf{TRACCIA:} Controllare se un albero è un BST valido (ogni nodo deve rispettare min/max ereditati dai genitori).
+\end{esercizio}
+
+\begin{jsbox}
+function isBST(nodo, min = -Infinity, max = Infinity) {
+    if (!nodo) return true;
+    
+    if (nodo.val <= min || nodo.val >= max) return false;
+    
+    return isBST(nodo.sx, min, nodo.val) && 
+           isBST(nodo.dx, nodo.val, max);
+}
+\begin{esercizio}{Es. 44: Specchia Albero (Mirror)}
+\textbf{TRACCIA:} Scrivere una funzione che inverte speculare (sx diventa dx) tutto l'albero.
+\end{esercizio}
+
+\begin{jsbox}
+function invertTree(root) {
+    if (!root) return null;
+    
+    // Scambio i figli
+    let temp = root.sx;
+    root.sx = root.dx;
+    root.dx = temp;
+    
+    // Ricorsione
+    invertTree(root.sx);
+    invertTree(root.dx);
+    
+    return root;
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 45: Albero Simmetrico}
+\textbf{TRACCIA:} Verificare se un albero è speculare a se stesso (il sottoalbero sx è il mirror del dx).
+\end{esercizio}
+
+\begin{jsbox}
+function isSymmetric(root) {
+    if (!root) return true;
+    
+    function isMirror(n1, n2) {
+        if (!n1 && !n2) return true; // Entrambi null
+        if (!n1 || !n2) return false; // Uno solo null
+        
+        return (n1.val === n2.val) &&
+               isMirror(n1.sx, n2.dx) &&
+               isMirror(n1.dx, n2.sx);
+    }
+    
+    return isMirror(root.sx, root.dx);
+}
+\end{jsbox}

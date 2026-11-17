@@ -1,0 +1,97 @@
+\section{Implementazione di Insiemi e Multi-Insiemi (Lez. 09)}
+
+\subsection{Usare gli Oggetti come Insiemi (Sets)}
+In JavaScript, possiamo usare gli Oggetti per simulare gli insiemi matematici.
+L'idea è semplice: usiamo le chiavi dell'oggetto per rappresentare gli elementi. Il valore non importa (spesso mettiamo 1 o true).
+Questo garantisce che \textbf{non ci siano duplicati} (una chiave in un oggetto è unica).
+
+\begin{concept}{Unicità delle Chiavi}
+L'idea è semplice: usiamo le chiavi dell'oggetto per rappresentare gli elementi. Il valore non importa (spesso mettiamo 1 o true).
+Questo garantisce che \textbf{non ci siano duplicati} (una chiave in un oggetto è unica).
+\end{concept}
+\begin{jsbox}
+let frutta = {
+    "mela": 1,
+    "pera": 1,
+    "banana": 1
+};
+
+// Verifica Appartenenza (in)
+if ("mela" in frutta) {
+    console.log("C'e' la mela!");
+}
+
+// Aggiungere (basta assegnare)
+frutta["kiwi"] = 1;
+
+// Rimuovere (delete)
+delete frutta["pera"];
+\end{jsbox}
+
+\subsection{Operazioni sugli Insiemi: Unione e Intersezione}
+Possiamo scrivere semplici funzioni per combinare due insiemi.
+
+\subsubsection{Unione (+)}
+\begin{concept}{Somma Logica (OR)}
+Prendiamo due oggetti e ne creiamo un terzo che ha le chiavi di entrambi.
+\end{concept}
+\begin{jsbox}
+function unione(A, B) {
+    let C = {};
+    // Copio tutte le chiavi di A
+    for (let k in A) C[k] = 1;
+    // Copio tutte le chiavi di B (se ci sono già, sovrascrivo, non fa nulla)
+    for (let k in B) C[k] = 1;
+    return C;
+}
+\end{jsbox}
+
+\subsubsection{Intersezione (Solo i comuni)}
+\begin{concept}{Prodotto Logico (AND)}
+Tengo solo gli elementi che esistono in entrambi gli insiemi.
+\end{concept}
+\begin{jsbox}
+function intersezione(A, B) {
+    let C = {};
+    for (let k in A) {
+        // Se c'è anche in B, lo tengo
+        if (k in B) {
+            C[k] = 1;
+        }
+    }
+    return C;
+}
+\end{jsbox}
+
+\subsection{Multi-Insiemi (Contatori)}
+A volte vogliamo contare \textit{quante volte} appare un elemento (es. carrello della spesa: 3 mele).
+In questo caso, il valore associato alla chiave non sarà più 1, ma il numero di occorrenze.
+
+\begin{jsbox}
+let carrello = {
+    "mela": 3,  // 3 mele
+    "latte": 2, // 2 bottiglie
+    "pane": 1
+};
+\end{jsbox}
+
+\subsubsection{Da Array a Multi-Insieme}
+\begin{concept}{Istogramma di Frequenza}
+Un esercizio classico: dato un array di parole, contare quante volte appare ciascuna.
+\end{concept}
+\begin{jsbox}
+function contaParole(lista) {
+    let contatore = {};
+    for (let parola of lista) {
+        if (parola in contatore) {
+            contatore[parola] += 1; // Incremento
+        } else {
+            contatore[parola] = 1; // Inizializzo
+        }
+    }
+    return contatore;
+}
+
+let input = ["mela", "pera", "mela"];
+console.log(contaParole(input)); // { mela: 2, pera: 1 }
+\end{jsbox}

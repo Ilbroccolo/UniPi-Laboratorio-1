@@ -1,0 +1,106 @@
+\section{Liste Concatenate: Concetti Base (Lab 12)}
+
+\begin{concept}{Stack (LIFO) vs Queue (FIFO)}
+\textbf{Stack:} Pila di piatti. Ultimo dentro, primo fuori (LIFO).
+\textbf{Queue:} Fila alle poste. Primo dentro, primo fuori (FIFO).
+\end{concept}
+
+\begin{center}
+\begin{tikzpicture}[
+    stackbox/.style={draw, thick, fill=niceBlue!10, minimum width=2.5cm, minimum height=0.8cm, font=\ttfamily},
+    arrow/.style={-{Stealth[length=3mm]}, thick, color=codeBlue}
+]
+% Contenitore Stack
+\draw[thick] (-1.5, 0) -- (-1.5, -3.5) -- (1.5, -3.5) -- (1.5, 0);
+% Elementi
+\node[stackbox] (item1) at (0, -3.0) {index 0: 10};
+\node[stackbox] (item2) at (0, -2.1) {index 1: 20};
+\node[stackbox, fill=jsYellow!20] (item3) at (0, -1.2) {index 2: 30};
+% Frecce
+\draw[arrow] (2.5, -0.5) to[out=180, in=0] node[midway, above, font=\small\bfseries] {PUSH} (item3.east);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Cosa sono le Liste Concatenate?}
+A differenza degli Array, dove gli elementi sono vicini in memoria e usiamo gli indici (`a[0]`), nelle Liste gli elementi sono sparsi.
+Ogni elemento (**Nodo**) contiene:
+\begin{itemize}
+    \item **val**: Il dato (numero, stringa, etc.)
+    \item **next**: Un riferimento (freccia) al prossimo nodo. L'ultimo punta a `null`.
+\end{itemize}
+
+Struttura: `Testa -> [5 | ->] -> [3 | ->] -> [6 | null]`
+
+\subsubsection{Immaginiamolo visivamente}
+\begin{verbatim}
+       HEAD
+        |
+        v
+    +------+      +------+      +------+
+    | 5    | ---> | 3    | ---> | 6    | ---> null
+    +------+      +------+      +------+
+\end{verbatim}
+
+\subsection{Definizione in JavaScript}
+\begin{concept}{Struttura Nodo}
+Non serve una classe speciale, bastano gli oggetti!
+Ogni nodo ha un valore e un puntatore al prossimo.
+\end{concept}
+\begin{jsbox}
+let nodo3 = { val: 6, next: null };
+let nodo2 = { val: 3, next: nodo3 };
+let head  = { val: 5, next: nodo2 };
+\end{jsbox}
+
+\subsection{Operazioni Base (Ricorsive)}
+
+\subsubsection{1. Trovare un elemento (listFind)}
+\begin{concept}{Scansione Lineare}
+Scorriamo la lista finché non troviamo il valore o finiamo (null).
+\end{concept}
+\begin{jsbox}
+function listFind(nodo, valore) {
+    if (!nodo) return null; // Lista finita, non trovato
+    if (nodo.val === valore) return nodo; // Trovato!
+    
+    // Cerca nel resto della lista
+    return listFind(nodo.next, valore);
+}
+\end{jsbox}
+
+\subsubsection{2. Aggiungere in fondo (listPush)}
+\begin{concept}{Inserimento in Coda}
+Dobbiamo "scendere" fino all'ultimo nodo (quello con next: null) e attaccarne uno nuovo.
+\end{concept}
+\begin{jsbox}
+function listPush(nodo, valore) {
+    // Caso base: se il nodo è null, creo il nuovo nodo qui
+    if (!nodo) {
+        return { val: valore, next: null };
+    }
+    
+    // Passo ricorsivo: ricostruisco la lista attaccando il risultato
+    nodo.next = listPush(nodo.next, valore);
+    return nodo;
+}
+\end{jsbox}
+
+\subsubsection{3. Rimuovere l'ultimo (listPop)}
+\begin{concept}{Rimozione Ultimo}
+Restituisce una coppia: `[ListaAggiornata, ValoreRimosso]`.
+\end{concept}
+\begin{jsbox}
+function listPop(nodo) {
+    if (!nodo) return [null, undefined]; // Lista vuota
+    
+    // Se sono l'ultimo nodo (il mio next è null)
+    if (!nodo.next) {
+        return [null, nodo.val]; // Mi rimuovo (ritorno null al padre)
+    }
+    
+    // Altrimenti vado avanti
+    let [nuovaCoda, valRimosso] = listPop(nodo.next);
+    nodo.next = nuovaCoda; // Aggiorno il mio puntatore
+    return [nodo, valRimosso];
+}
+\end{jsbox}

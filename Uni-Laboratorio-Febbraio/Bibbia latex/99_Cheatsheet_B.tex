@@ -1,0 +1,270 @@
+\newpage
+\section{Cheat Sheet: La Bibbia di JavaScript}
+Riepilogo definitivo di sintassi, metodi e algoritmi.
+
+\subsection{1. Oggetto Math (Matematica)}
+Tutte le funzioni matematiche sono metodi statici dell'oggetto \texttt{Math}.
+
+\begin{center}
+\begin{tabular}{|l|p{5cm}|l|}
+\hline
+\textbf{Metodo} & \textbf{Descrizione} & \textbf{Esempio} \\
+\hline
+\texttt{Math.floor(x)} & Arrotonda per \textbf{difetto} (pavimento) & \texttt{floor(5.9) -> 5} \\
+\hline
+\texttt{Math.ceil(x)} & Arrotonda per \textbf{eccesso} (soffitto) & \texttt{ceil(5.1) -> 6} \\
+\hline
+\texttt{Math.round(x)} & Arrotonda all'intero più \textbf{vicino} & \texttt{round(5.5) -> 6} \\
+\hline
+\texttt{Math.abs(x)} & Valore assoluto (toglie il segno) & \texttt{abs(-5) -> 5} \\
+\hline
+\texttt{Math.min(a,b)} & Restituisce il valore più basso & \texttt{min(1, 2) -> 1} \\
+\hline
+\texttt{Math.max(a,b)} & Restituisce il valore più alto & \texttt{max(1, 2) -> 2} \\
+\hline
+\texttt{Math.random()} & Numero casuale tra 0 e 1 (escl.) & \texttt{0.1234...} \\
+\hline
+\texttt{Math.sqrt(x)} & Radice quadrata & \texttt{sqrt(9) -> 3} \\
+\hline
+\texttt{Math.pow(b, e)} & Potenza ($b^e$) & \texttt{pow(2, 3) -> 8} \\
+\hline
+\texttt{Math.trunc(x)} & Rimuove la parte decimale (tronca) & \texttt{trunc(5.9) -> 5} \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{2. Stringhe e Array}
+
+\subsubsection{Stringhe (Immutabili)}
+\begin{tabular}{|l|l|l|}
+\hline
+\texttt{length} & Proprietà lunghezza & \texttt{"Ciao".length -> 4} \\
+\hline
+\texttt{charAt(i)} & Carattere all'indice i & \texttt{"Ciao".charAt(0) -> "C"} \\
+\hline
+\texttt{includes(s)} & Cerca sottostringa & \texttt{"Ciao".includes("ia") -> true} \\
+\hline
+\texttt{indexOf(s)} & Indice prima occorrenza & \texttt{"Ciao".indexOf("z") -> -1} \\
+\hline
+\texttt{slice(a, b)} & Estrae da a fino a b & \texttt{"Ciao".slice(1,3) -> "ia"} \\
+\hline
+\texttt{split(sep)} & Da Stringa a Array & \texttt{"A,B".split(",") -> ["A","B"]} \\
+\hline
+\texttt{trim()} & Rimuove spazi lati & \texttt{" x ".trim() -> "x"} \\
+\hline
+\texttt{substring(a,b)} & Come slice (no negativi) & \texttt{"Ciao".substring(1,3) -> "ia"} \\
+\hline
+\texttt{toUpperCase()} & In MAIUSCOLO & \texttt{"ciao".toUpperCase() -> "CIAO"} \\
+\hline
+\texttt{toLowerCase()} & In minuscolo & \texttt{"Ciao".toLowerCase() -> "ciao"} \\
+\hline
+\texttt{replace(a, b)} & Sostituisce a con b & \texttt{"Ciao".replace("C", "M") -> "Miao"} \\
+\hline
+\end{tabular}
+
+\subsubsection{Array: Ordinamento e Modifica (Attenzione ai Mutanti!)}
+\begin{center}
+\begin{tabular}{|l|p{6cm}|l|}
+\hline
+\textbf{Metodo} & \textbf{Descrizione} & \textbf{Mutante?} \\
+\hline
+\texttt{sort(fn)} & Ordina in-place. Default alfabetico! & \textbf{SÌ} \\
+\hline
+\texttt{splice(i, n)} & Toglie n elem da i. (Opz: aggiunge) & \textbf{SÌ} \\
+\hline
+\texttt{toSorted(fn)} & Copia ordinata (Nuovo Array) & NO \\
+\hline
+\texttt{concat(arr)} & Unisce due array (Nuovo Array) & NO \\
+\hline
+\texttt{push/pop} & Aggiunge/Rimuove in coda & \textbf{SÌ} \\
+\hline
+\texttt{shift/unshift} & Rimuove/Aggiunge in testa & \textbf{SÌ} \\
+\hline
+\texttt{slice(a, b)} & Copia sottosezione [a, b) & NO \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{Array: Metodi Funzionali (Iterazione e Trasformazione)}
+\begin{center}
+\begin{tabular}{|l|p{5cm}|l|}
+\hline
+\textbf{Metodo} & \textbf{Descrizione} & \textbf{Return} \\
+\hline
+\texttt{forEach(fn)} & Esegue su ogni elemento & \texttt{undef} \\
+\hline
+\texttt{map(fn)} & Crea nuovo array trasformato & \textbf{Array} \\
+\hline
+\texttt{filter(fn)} & Filtra gli elementi (true) & \textbf{Array} \\
+\hline
+\texttt{find(fn)} & Primo elemento cercato & Elem \\
+\hline
+\texttt{some/every(fn)} & Almeno uno / Tutti (true) & Bool \\
+\hline
+\texttt{reduce(fn, acc)} & Accumula in singolo valore & Valore \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{jsbox}
+// 1. SORT vs TOSORTED
+let n = [10, 2, 5];
+// sort() converte in stringhe! "10" viene prima di "2"
+n.sort(); // [10, 2, 5] (Errato per numeri)
+n.sort((a,b) => a - b); // [2, 5, 10] (Corretto) (Modifica n)
+
+let original = [3, 1, 2];
+let ordered = original.toSorted((a,b) => a - b); 
+// original è ancora [3, 1, 2], ordered è [1, 2, 3]
+
+// 2. SPLICE (Taglia e Cuci) vs SLICE (Copia)
+let a = ["A", "B", "C", "D"];
+a.splice(1, 2); // Rimuove 2 elementi partendo da indice 1
+console.log(a); // ["A", "D"] (Modificato!)
+
+// 3. CONCAT
+let x = [1, 2];
+let y = x.concat([3, 4]); // [1, 2, 3, 4] (x invariato)
+\end{jsbox}
+
+\subsection{2.5. Funzioni e Oggetti}
+Ogni funzione è un oggetto con proprietà e metodi specifici.
+
+\begin{center}
+\begin{tabular}{|l|p{6.5cm}|}
+\hline
+\textbf{Proprietà/Metodo} & \textbf{Descrizione} \\
+\hline
+\texttt{Function.length} & Numero di argomenti attesi. \\
+\hline
+\texttt{Function.name} & Nome della funzione. \\
+\hline
+\texttt{call(this, args...)} & Invoca con \texttt{this} esplicito e argomenti. \\
+\hline
+\texttt{apply(this, [args])} & Come \texttt{call}, ma argomenti in array. \\
+\hline
+\texttt{bind(this)} & Restituisce \textbf{nuova funzione} legata. \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{3. Classi e Prototipi (ES6+)}
+\begin{center}
+\begin{tabular}{|l|p{6cm}|}
+\hline
+\textbf{Concetto} & \textbf{Descrizione} \\
+\hline
+\texttt{\_\_proto\_\_} & Link interno di \textbf{ogni oggetto} al suo genitore. \\
+\hline
+\texttt{prototype} & Proprietà delle \textbf{funzioni} usata da \texttt{new}. \\
+\hline
+\texttt{class X} & Zucchero sintattico per funzione costruttore. \\
+\hline
+\texttt{extends Y} & Imposta la catena dei prototipi (\texttt{X.prototype.\_\_proto\_\_ = Y.prototype}). \\
+\hline
+\texttt{super} & Riferimento al genitore (obbligatorio nel costruttore). \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{jsbox}
+class Cane extends Animale {
+    static specie = "Mammifero"; // Campo Statico
+    #fame = 100;                 // Campo Privato (Private)
+
+    constructor(nome) {
+        super(nome); // Chiama costruttore padre
+    }
+
+    mangia() { this.#fame -= 10; }
+}
+\end{jsbox}
+
+\subsection{4. Iterazione e Strutture Dati}
+\begin{center}
+\begin{tabular}{|l|p{4cm}|p{4.5cm}|}
+\hline
+\textbf{Sintassi} & \textbf{Target} & \textbf{Esempio} \\
+\hline
+\texttt{for (let v of arr)} & Valori (Array/String) & \texttt{"A", "B", "C"} \\
+\hline
+\texttt{for (let k in obj)} & Chiavi (Oggetti) & \texttt{"nome", "eta"} \\
+\hline
+\texttt{Object.keys(o)} & Array Chiavi & \texttt{["k1", "k2"]} \\
+\hline
+\texttt{Object.values(o)} & Array Valori & \texttt{[10, 20]} \\
+\hline
+\texttt{Object.entries(o)} & Array Coppie & \texttt{[["k1",10], ["k2",20]]} \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{5. Stack e Alberi (Algoritmi)}
+\textbf{Stack (LIFO)}: Usa \texttt{push()} per inserire e \texttt{pop()} per estrarre.
+
+\textbf{Alberi Binari (Visite)}:
+\begin{jsbox}
+// Nodo Albero
+function Nodo(v) { this.val = v; this.sx = null; this.dx = null; }
+
+// DFS (Ricorsiva: Pre-Order)
+function dfs(n) {
+    if(!n) return;
+    console.log(n.val); // VISITA (Sposta per In/Post-Order)
+    dfs(n.sx);
+    dfs(n.dx);
+}
+
+// BFS (Iterativa con Coda)
+function bfs(root) {
+    let coda = [root];
+    while(coda.length) {
+        let n = coda.shift(); // Estrai Testa
+        if(n) {
+            console.log(n.val);
+            if(n.sx) coda.push(n.sx); // Accoda Figli
+            if(n.dx) coda.push(n.dx);
+        }
+    }
+}
+\end{jsbox}
+
+\subsection{6. Snippets Salva-Vita (Pattern Comuni)}
+\begin{jsbox}
+// 1. COPIA E ORDINA (Senza modificare l'originale)
+// Spread operator [...] crea una copia, poi sort() ordina quella.
+let copiaOrdinata = [...originale].sort((a,b) => a - b);
+
+// 2. RIMUOVI DUPLICATI
+let unici = [...new Set([1, 2, 2, 1])]; // [1, 2]
+
+// 3. DEEP COPY (Clonare Oggetti Semplici)
+let clone = JSON.parse(JSON.stringify(oggetto));
+
+// 4. CICLO AL CONTRARIO (Utile per rimuovere elementi)
+for (let i = arr.length - 1; i >= 0; i--) {
+   if (arr[i] < 0) arr.splice(i, 1);
+}
+
+// 5. FREQUENCY MAP (Conteggio Elementi)
+const freq = {};
+for (const x of arr) { freq[x] = (freq[x] || 0) + 1; }
+
+// 6. MATRICE NxM (Safe Initialization)
+// Evita che tutte le righe puntino allo stesso array!
+const matrix = Array.from({ length: N }, () => Array(M).fill(0));
+
+// 7. MEMOIZATION (Caching Recursion)
+const memo = {};
+function fib(n) {
+    if (n in memo) return memo[n];
+    if (n <= 1) return n;
+    return memo[n] = fib(n-1) + fib(n-2);
+}
+
+// 8. DEEP CLONE (Moderno)
+const copy = structuredClone(original);
+
+// 9. FLATTEN (Appiattire Array)
+const flat = [1, [2, [3]]].flat(Infinity); // [1, 2, 3]
+\end{jsbox}

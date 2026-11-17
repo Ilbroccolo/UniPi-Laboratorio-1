@@ -1,0 +1,231 @@
+\documentclass[a4paper,11pt]{article}
+
+% --- Pacchetti Fondamentali ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+% --- Font Moderni ---
+\usepackage{lmodern}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault} 
+
+% --- Colori e Grafica ---
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows.meta, positioning, chains, fit, calc, matrix, trees, backgrounds}
+
+% --- Definizione Colori (Light Theme + Orange + New Cover Colors)
+\definecolor{mainOrange}{RGB}{255, 140, 0}
+\definecolor{jsYellow}{HTML}{F7DF1E}
+\definecolor{codeBg}{gray}{0.95}
+\definecolor{codeBlue}{HTML}{0000FF}
+\definecolor{codePink}{HTML}{800080}
+\definecolor{codeGreen}{HTML}{008000}
+\definecolor{niceBlue}{HTML}{2E86C1}
+\definecolor{jsDark}{HTML}{282C34}    
+\definecolor{tsBlue}{HTML}{3178C6}    
+\definecolor{textGray}{RGB}{100, 100, 100}
+
+% --- PALETTE COLORI ACCADEMICA (Nuovo Capitolo) ---
+\definecolor{paletteIndigo}{HTML}{4B0082}
+\definecolor{paletteRegalia}{HTML}{522D80}
+\definecolor{paletteLenurple}{HTML}{BA55D3}
+\definecolor{paletteLavender}{HTML}{E6E6FA}
+
+% --- COMANDO COPERTINA ESERCIZIARIO (Pure TikZ + Optical Centering) ---
+\newcommand{\jscover}[1]{
+    \begin{titlepage}
+    \thispagestyle{empty}
+    \begin{tikzpicture}[remember picture, overlay]
+        
+        % 1. Sfondo Laterale (Scuro)
+        \fill[jsDark] (current page.north west) rectangle ($(current page.south west) + (4cm,0)$);
+        
+        % 2. Linea Accento (Arancione)
+        \draw[mainOrange, line width=4pt] ($(current page.north west) + (4.2cm,-2cm)$) -- ($(current page.south west) + (4.2cm,2cm)$);
+        
+        % 3. Contenuto Testuale (TikZ Node Absolute Positioning)
+        % Optical Centering: Width 12cm positioned at x=12.5cm
+        \node[anchor=north, inner sep=0, text width=12cm, align=center] at ($(current page.north west) + (12.5cm,-5cm)$) {
+            
+                
+                {\fontsize{18}{22}\selectfont \textcolor{textGray}{Università di Pisa}}\\[0.2cm]
+                {\fontsize{16}{20}\selectfont \textcolor{textGray}{Corso di Laurea in Informatica}}\\[2cm]
+                
+                % RIDOTTO FONT PER FARLO STARE IN 12CM
+                {\fontsize{42}{52}\selectfont \textbf{\textcolor{jsDark}{L'ESERCIZIARIO}}}\\[0.5cm]
+                
+                {\fontsize{35}{45}\selectfont \textbf{\textcolor{black}{DI LABORATORIO}}}\\[0.2cm]
+                {\fontsize{35}{45}\selectfont \textbf{\textcolor{black}{JAVASCRIPT}}}\\[1.5cm]
+                
+                \textcolor{mainOrange}{\rule{10cm}{4pt}}\\[1cm]
+                
+                {\Large \textbf{Dal Testo alla Logica}}\\[0.2cm]
+                {\large \textit{Oltre 48 Esercizi Svolti e Commentati}}\\[1.5cm]
+                
+                {\large Docente titolare:}\\[0.2cm]
+                {\Large \textbf{#1}}\\[2.5cm]
+                
+                \textbf{\large Autore del riassunto:}\\
+                {\large Joseph Zucchelli (IlBroccolo)}\\[2cm]
+                
+                \vfill
+                {\large \textbf{Anno Accademico 2025 - 2026}}
+            
+        };
+        
+        % Decorazione JS + TS
+        \node[anchor=south east] at ($(current page.south east) + (-2cm, 2cm)$) {
+            \tikz\draw[fill=jsYellow, draw=none] (0,0) rectangle (2,2) node[midway, black, font=\bfseries\huge] {JS};
+             \tikz\draw[fill=tsBlue, draw=none] (2.2,0) rectangle (4.2,2) node[midway, white, font=\bfseries\huge] {TS};
+        };
+
+    \end{tikzpicture}
+    \end{titlepage}
+    \clearpage
+}
+
+% --- Box per il Codice e Note (tcolorbox) ---
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage{titlesec}
+
+% Setup Titoli
+\titleformat{\section}
+{\color{mainOrange}\normalfont\Large\bfseries}
+{\color{mainOrange}\thesection}{1em}{}[\color{mainOrange}\hrule height 1pt]
+
+\titleformat{\subsection}
+{\color{mainOrange}\normalfont\large\bfseries}
+{\color{mainOrange}\thesubsection}{1em}{}
+
+% Stile per il codice JS/TS
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, const, let, interface, type, number, string, boolean, any, unknown, void},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this, console, log},
+  ndkeywordstyle=\color{teal}\bfseries,
+  identifierstyle=\color{black}, 
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{green!50!black}\ttfamily,
+  stringstyle=\color{red!60!black}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+% Box Codice (JSBox)
+\newtcblisting{jsbox}[1][]{
+  colback=codeBg,
+  colframe=gray!50,
+  listing only,
+  listing options={
+    language=JavaScript,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    breaklines=true,
+    columns=fullflexible
+  },
+  title={\textbf{Soluzione / Codice}},
+  coltitle=black,
+  fonttitle=\bfseries\ttfamily,
+  enhanced,
+  attach boxed title to top right={yshift=-3mm, xshift=-3mm},
+  boxed title style={colback=jsYellow},
+  boxrule=1pt,
+  #1
+}
+
+% Box Concetti (Dictionary)
+\newtcolorbox{dizionario}[1]{
+  colback=niceBlue!5,
+  colframe=niceBlue,
+  title={#1},
+  fonttitle=\bfseries,
+  sharp corners=downhill,
+  enhanced,
+  drop shadow
+}
+
+% Box Esercizio
+\newtcolorbox{esercizio}[1]{
+  colback=white,
+  colframe=mainOrange,
+  title={#1},
+  fonttitle=\bfseries,
+  enhanced,
+  attach boxed title to top left={yshift=-3mm, xshift=3mm},
+  boxed title style={colback=mainOrange},
+  boxrule=1pt
+}
+
+% --- NUOVI STILI BOX (Per capitoli esterni) ---
+\newtcolorbox{definition}[1][]{
+    colback=paletteLavender!30,
+    colframe=paletteIndigo,
+    fonttitle=\bfseries,
+    title={Definizione: #1},
+    enhanced,
+    breakable,
+    attach boxed title to top left={yshift=-2mm, xshift=2mm},
+    boxed title style={colback=paletteIndigo}
+}
+
+\newtcolorbox{concept}[1][]{
+    colback=white,
+    colframe=paletteRegalia,
+    fonttitle=\bfseries,
+    title={Concetto Chiave: #1},
+    enhanced,
+    breakable,
+    borderline west={2pt}{0pt}{paletteRegalia}
+}
+
+\newtcolorbox{curiosita}[1][]{
+    colback=paletteLenurple!10,
+    colframe=paletteLenurple,
+    fonttitle=\bfseries,
+    title={Nota a margine: #1},
+    enhanced,
+    breakable
+}
+
+\newtcolorbox{warning}[1][]{
+    colback=red!5,
+    colframe=red!60!black,
+    fonttitle=\bfseries,
+    title={Attenzione: #1},
+    enhanced,
+    breakable
+}
+
+\begin{document}
+
+\jscover{Prof.ssa Ferrari}
+\tableofcontents
+\newpage
+
+% --- Capitoli ---
+\input{00_Logica} \newpage
+\input{01_StruttureDati} \newpage
+\input{02_ProgrammazioneFunzionale} \newpage
+\input{03_MathELib} \newpage
+\input{04_TypeScript} \newpage
+\input{05_Ricorsione} \newpage
+\input{06_Liste} \newpage
+\input{07_ArrayAvanzati} \newpage
+\input{08_Alberi} \newpage
+\input{09_Grafi}
+
+
+
+
+\input{10_IdentitaOggetti} \newpage
+\input{11_PrototipiEClassi}
+
+\end{document}

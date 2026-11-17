@@ -1,0 +1,101 @@
+\section{Capitolo 4: TypeScript e Tipi}
+
+\begin{esercizio}{Es. 13: Interfacce e Tipi Opzionali}
+\textbf{TRACCIA:} Definire un'interfaccia `Studente` con:
+- `matricola` (numero, obbligatorio)
+- `nome` (stringa, obbligatorio)
+- `votoLaurea` (numero, \textbf{opzionale} - potrebbe non essersi ancora laureato)
+
+Scrivere poi una funzione `isLaureato(s)` che ritorna true se il voto esiste.
+\end{esercizio}
+
+\begin{jsbox}
+interface Studente {
+    matricola: number;
+    nome: string;
+    votoLaurea?: number; // Il punto interrogativo indica opzionale
+}
+
+function isLaureato(s: Studente): boolean {
+    // Controllo se è diverso da undefined
+    return s.votoLaurea !== undefined;
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 14: Generics (La Scatola Magica)}
+\textbf{TRACCIA:} Scrivere una classe `Scatola<T>` che può contenere un valore di qualsiasi tipo T.
+Metodi: `inserisci(val: T)` e `estrai(): T`.
+\end{esercizio}
+
+\begin{jsbox}
+class Scatola<T> {
+    private contenuto: T | null = null;
+    
+    inserisci(val: T): void {
+        this.contenuto = val;
+    }
+    
+    estrai(): T | null {
+        return this.contenuto;
+    }
+}
+
+// Uso
+let scatolaNumeri = new Scatola<number>();
+scatolaNumeri.inserisci(10);
+// scatolaNumeri.inserisci("ciao"); // ERRORE TS!
+\end{jsbox}
+
+\begin{esercizio}{Es. 15: Tuple e Array}
+\textbf{TRACCIA:} Definire un tipo `Punto3D` come una Tripla (Tupla) di 3 numeri `[x, y, z]`.
+Scrivere una funzione che somma due punti.
+\end{esercizio}
+
+\begin{jsbox}
+type Punto3D = [number, number, number];
+
+function sommaPunti(p1: Punto3D, p2: Punto3D): Punto3D {
+    return [
+        p1[0] + p2[0],
+        p1[1] + p2[1],
+        p1[2] + p2[2]
+    ];
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 16: Type Guards (Narrowing)}
+\textbf{TRACCIA:} Una funzione accetta `input: string | number`.
+Se è una stringa, ritorna la lunghezza. Se è un numero, ritorna il numero stesso moltiplicato per 2.
+Usa `typeof` per distinguere.
+\end{esercizio}
+
+\begin{jsbox}
+function processa(input: string | number): number {
+    if (typeof input === "string") {
+        // Qui TS sa che input è string
+        return input.length;
+    } else {
+        // Qui TS sa che input e' number
+        return input * 2;
+    }
+}
+\begin{esercizio}{Es. 25: Discriminated Union (Result Type)}
+\textbf{TRACCIA:} Definire un tipo `Result<T>` che può essere `{ success: true, data: T }` OPPURE `{ success: false, error: string }`.
+Scrivere una funzione che gestisce entrambi i casi stampando il dato o l'errore.
+\end{esercizio}
+
+\begin{jsbox}
+type Result<T> = 
+    | { success: true; data: T } 
+    | { success: false; error: string };
+
+function gestisci(res: Result<number>) {
+    if (res.success) {
+        // Qui TS sa che esiste .data
+        console.log("Dato:", res.data);
+    } else {
+        // Qui TS sa che esiste .error
+        console.log("Errore:", res.error);
+    }
+}
+\end{jsbox}

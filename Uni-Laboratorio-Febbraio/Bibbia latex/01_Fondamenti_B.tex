@@ -1,0 +1,43 @@
+\section{Fondamenti: Il Modello Formale (Lez. 01-02)}
+
+\subsection{Astrazione del Corso}
+Il corso di Laboratorio I (Docenti: J. Soldani, G. Vinciguerra) utilizza \textbf{JavaScript} non come strumento per il web, ma come linguaggio formale per l'implementazione di algoritmi e strutture dati.
+L'obiettivo è puramente \textbf{computazionale}: analizzare come un esecutore (l'interprete) elabora simboli e valori secondo regole logiche rigorose.
+L'ambiente di riferimento è astratto (l'interprete Node.js), svincolato dalle logiche del browser (DOM, interfacce grafiche).
+
+\subsection{Dominio dei Valori (Tipi Primitivi)}
+In termini insiemistici, JavaScript definisce domini di valori disgiunti, detti \textit{tipi primitivi}. Un esecutore formale opera su questi insiemi:
+
+\begin{itemize}
+    \item $\mathbb{N}$ e $\mathbb{R}$ unificati nel tipo \texttt{Number} (IEEE 754). Include elementi singolari come $\infty$ (\texttt{Infinity}) e l'elemento non-numerico assorbente \texttt{NaN}.
+    \item L'algebra di Boole rappresentata dal tipo \texttt{Boolean} ($\{true, false\}$).
+    \item L'insieme delle sequenze di caratteri rappresentato dal tipo \texttt{String}.
+\end{itemize}
+
+Esistono inoltre due valori singolari per la gestione dell'\textit{assenza di informazione}:
+\begin{itemize}
+    \item \texttt{undefined}: Valore assiomatico di default per simboli dichiarati ma non legati a un valore.
+    \item \texttt{null}: Elemento neutro esplicito, denota l'insieme vuoto o l'assenza di un oggetto.
+\end{itemize}
+
+\subsection{Algebra degli Operatori e Coercizione}
+Le operazioni tra tipi eterogenei seguono un'algebra di riduzione definita, nota come \textbf{Coercizione}.
+Data un'operazione binaria $\otimes(A, B)$, se $type(A) \neq type(B)$, l'interprete applica funzioni di trasformazione implicita $f: T_1 \to T_2$ per rendere l'operazione decidibile.
+
+\begin{enumerate}
+    \item \textbf{Assioma della Concatenazione:} Se esiste un operando $S \in \texttt{String}$ e l'operatore è $+$, l'operazione diviene concatenazione di caratteri.
+    \\ $x + "y" \Rightarrow string(x) \circ "y"$.
+    \item \textbf{Assioma Aritmetico:} Per operatori $\{-, *, /, \%\}$, ogni operando viene mappato nel dominio \texttt{Number}.
+    \\ $"5" - 3 \Rightarrow 5 - 3 = 2$.
+\end{enumerate}
+
+\subsection{Logica Booleana Estesa}
+L'operatore di uguaglianza è definito in due modalità:
+\begin{itemize}
+    \item \textbf{Uguaglianza Debole ($==$):} Equivalenza logica post-riduzione (ammette coercizione).
+    \item \textbf{Uguaglianza Stretta ($===$):} Identità matematica. $A \equiv B \iff (val(A) = val(B)) \land (type(A) = type(B))$.
+\end{itemize}
+
+L'insieme dei valori "Veri" e "Falsi" è esteso. L'insieme dei \textbf{Falsy Values} $\mathcal{F}$ contiene esattamente sei elementi:
+$$ \mathcal{F} = \{ \text{false}, 0, \text{""}, \text{null}, \text{undefined}, \text{NaN} \} $$
+Ogni altro valore appartiene all'insieme complementare $\mathcal{T}$ (Truthy).

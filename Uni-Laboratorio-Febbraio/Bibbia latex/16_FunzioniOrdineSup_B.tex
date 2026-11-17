@@ -1,0 +1,104 @@
+\section{Funzioni di Ordine Superiore e Array (Lab 16)}
+
+\subsection{Funzioni come Valori}
+In JS le funzioni sono "Cittadini di prima classe". Significa che puoi metterle dentro una variabile, passarle come argomenti o ritornarle.
+Una **Funzione di Ordine Superiore** è proprio una funzione che accetta un'altra funzione come parametro.
+
+\subsection{Metodi degli Array (Il "Coltellino Svizzero")}
+Ecco i metodi fondamentali per lavorare con gli array senza usare il ciclo for.
+
+\subsubsection{1. forEach (Esegui per tutti)}
+Esegue del codice per ogni elemento. Non ritorna nulla.
+\begin{lstlisting}[language=JavaScript]
+let nomi = ["Mario", "Luigi"];
+nomi.forEach((nome) => console.log("Ciao " + nome));
+\end{lstlisting}
+
+\subsubsection{2. map (Trasforma)}
+\begin{concept}{Visualizzazione: Map}
+Crea un **nuovo array** trasformando ogni elemento uno a uno.
+\begin{verbatim}
+   Input:  [ 1 , 2 , 3 ]
+              |   |   |
+             *2  *2  *2
+              |   |   |
+   Output: [ 2 , 4 , 6 ]
+\end{verbatim}
+\end{concept}
+
+\begin{jsbox}
+let num = [1, 2, 3];
+let doppi = num.map(x => x * 2); // [2, 4, 6]
+\end{jsbox}
+
+\subsubsection{3. filter (Seleziona)}
+\begin{concept}{Visualizzazione: Filter}
+Crea un **nuovo array** solo con gli elementi che passano il test (return true).
+\begin{verbatim}
+   Input:  [ 10 , 5 , 20 ]
+              |   |    |
+             OK   NO  OK
+              |        |
+   Output: [ 10 ,     20 ]
+\end{verbatim}
+\end{concept}
+
+\begin{jsbox}
+let num = [10, 5, 20];
+let grandi = num.filter(x => x > 9); // [10, 20]
+\end{jsbox}
+
+\subsubsection{4. find e findIndex (Cerca)}
+\begin{concept}{Differenza Find vs FindIndex}
+\texttt{find} ti dà il \textbf{valore} del primo elemento trovato. \texttt{findIndex} ti dà la sua \textbf{posizione}.
+\end{concept}
+\begin{jsbox}
+let num = [5, 12, 8];
+let trovato = num.find(x => x > 10); // 12
+let indice = num.findIndex(x => x > 10); // 1
+\end{jsbox}
+
+\subsubsection{5. every e some (Verifica)}
+\begin{concept}{Verifica Booleana}
+Restituiscono un Booleano (True/False).
+\begin{itemize}
+    \item \textbf{every:} Tutti soddisfano la condizione?
+    \item \textbf{some:} Almeno uno soddisfa la condizione?
+\end{itemize}
+\end{concept}
+\begin{lstlisting}[language=JavaScript]
+let num = [2, 4, 6];
+let tuttiPari = num.every(x => x % 2 == 0); // true
+\end{lstlisting}
+
+\subsubsection{6. reduce (Accumula)}
+Riduce tutto l'array a un singolo valore (es. somma).
+\begin{lstlisting}[language=JavaScript]
+let num = [1, 2, 3];
+let somma = num.reduce((acc, x) => acc + x, 0); // 6
+\end{lstlisting}
+
+\subsubsection{7. sort (Ordina)}
+Ordina l'array **modificandolo** (In-Place).
+Attenzione: di base ordina come stringhe! Per i numeri serve una funzione di comparazione.
+\begin{lstlisting}[language=JavaScript]
+let numeri = [10, 2, 5];
+numeri.sort((a, b) => a - b); // [2, 5, 10] (Crescente)
+numeri.sort((a, b) => b - a); // [10, 5, 2] (Decrescente)
+\end{lstlisting}
+
+\subsection{Closures (I Ricordi delle Funzioni)}
+Una Closure è quando una funzione figlia "ricorda" le variabili della funzione madre, anche dopo che la madre ha finito.
+
+\begin{lstlisting}[language=JavaScript]
+function creaContatore() {
+    let count = 0; // Variabile nascosta nella closure
+    return function() {
+        count++; // La funzione interna puo' ancora vederla!
+        return count;
+    }
+}
+const c = creaContatore();
+console.log(c()); // 1
+console.log(c()); // 2
+\end{lstlisting}

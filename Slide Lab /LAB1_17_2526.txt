@@ -1,0 +1,262 @@
+let a = [1,3];
+console.log(a)
+a.length = 4;
+console.log(a); // empty slots
+console.log(a[2]);
+
+// array come tuple
+let t = [4,1];
+let [b, c] = t; // assegnamento destrutturante, equivale a b=t[0]; c=t[1];
+console.log(a,b)
+
+// array come liste 
+let arr = [1,2,3,4];
+arr.push(5); // aggiungo alla fine
+console.log(arr)
+arr.pop();  // levo l'ultimo
+console.log(arr);
+arr.shift(); // levo il primo
+console.log(arr)
+arr.unshift(1); // aggiungo all'inizio
+
+// spread
+let arr1 = [42, 7, 9, 6, 11]
+let [testa, ...resto] = arr1;
+console.log(testa,resto)
+function len(arr){
+    [testa, ...resto] = arr
+    if (testa==undefined) return 0
+    return 1+len(resto)
+}
+console.log(len(arr1))
+
+
+let predicato = (n)=>(n>8)
+// every
+console.log(arr1.every(predicato))
+// some
+console.log(arr1.some(predicato))
+// find
+console.log(arr1.find(predicato))
+// findIndex
+console.log(arr1.findIndex(predicato))
+// includes
+console.log(arr1.includes(8))
+// forEach
+console.log(arr1.forEach((k)=>2*k)) // evoca solo la funzione per ogni elemento dell'array
+arr1.forEach((k)=>console.log(2*k))
+console.log(arr1) // arr1 non cambia
+// map
+console.log(arr1.map((k)=>2*k)) // cambia arr1 (in-place)
+// filter
+console.log(arr1.filter(predicato))
+console.log(arr1) // arr1 non cambia
+
+
+
+// ---------------------------------
+// ----------- Esercizi ------------
+// ---------------------------------
+
+// esercizio 1
+/*
+Scrivere una funzione JavaScript math che 
+prende come primo parametro un operatore (stringa) e poi 
+un numero indefinito di operandi (numeri), 
+e applica l’operazione agli operandi, in sequenza. 
+L’operatore può essere uno tra: ‘+’, ‘-’,’ *’,’/’
+Esempi:
+math(‘+’,4,2,7) -> 13
+math(‘/’, 8,2,2,2) ->1
+*/
+function math(op, ...ns){
+    // adesso ns è un array che contiene tutti i valori
+    switch(op){
+        case '+':{
+            return ns.reduce( (r,e)=> r+e, 0);
+        }
+        case '*':{
+            return ns.reduce( (r,e)=>r*e, 1)
+        }
+        case '-':{
+            //let inizio = ns.shift();
+            //return ns.reduce( (r,e)=>r-e , inizio)
+            let [inizio, ...resto] = ns;
+            return resto.reduce( (r,e)=>r-e , inizio)
+        }
+        case '/':{
+            let [inizio, ...resto] = ns;
+            return resto.reduce((r,e)=>r/e, inizio);
+        }
+    }
+}
+console.log(math('/',16,2,2))
+
+
+// esercizio 2
+/*
+Scrivere una funzione fip(a,p) che, dato un array qualunque a, e un predicato p, modifichi a in modo che 
+tutti gli elementi che non soddisfano il predicato p siano rimossi da a. 
+Si curi di non lasciare “posti vuoti” in a. 
+Esempi Se a=[3,5,10,1,4], dopo la chiamata fip(a,x=>x%2) a dovrà essere [3,5,1]
+*/
+function fip(a, p) {
+    // proviamo a risolverlo usando solo code (push & shift)
+    let tmp = [];
+    // svuoto a usando shift
+    while (a.length > 0) {
+        let x = a.shift();
+        if (p(x)) {
+            tmp.push(x);   // ci metto solo chi soddisfa il predicato
+        }
+    }  
+    // li rimetto dentro usando push
+    while (tmp.length > 0) {
+        a.push(tmp.shift());
+    }
+}
+let prova = [3,5,10,1,4]
+fip(prova, x=>x%2)
+console.log(prova) // --> [3,5,1]
+
+function fip2(a, p) {
+    let aFiltrato = a.filter(p); // NB: filter crea un nuovo array (non è in-place)
+    a.length = 0; // svuoto a
+    a.push(...aFiltrato); // reinserisce gli elementi filtrati con assegnamento destrutturante 
+}
+let prova2 = [3,5,10,1,4]
+fip2(prova2, x=>x%2)
+console.log(prova2) // --> [3,5,1]
+
+
+// esercizio 3
+/*
+Si scriva una funzione somma(n1, …, nk) che 
+ricevuti come argomento un numero qualunque di numeri, restituisca la loro somma.
+Esempi
+somma(5,7,2) → 14
+somma(3) → 3
+somma(10,5,-8,-7) → 0
+*/
+function somma(...ns){
+    let somma = 0;
+    for (let n of ns){
+        somma += n; 
+    }
+    return somma;
+}
+console.log(somma(5,7,2))
+
+function somma2(){
+    let somma = 0;
+    for (let i in arguments){
+        somma += arguments[i]; 
+    }
+    return somma;
+}
+console.log(somma2(5,7,2))
+
+
+// esercizio 4
+/*
+Scrivere una funzione isSorted(a) con a un array di numeri. 
+La funzione restituisce true se l'array è ordinato in senso strettamente crescente, false altrimenti.
+Risolverlo senza usare cicli (comandi for, while, do/while). 
+Provare a risolverlo con .reduce().
+Esempi:
+isSorted([-21,-2,0,4,6,210]) -> true
+isSorted([2,6,8,8,9,21]) -> false
+isSorted([2,6,8,9,10,-42]) -> false
+*/
+function isSorted(a){
+    if (a.length<2) return true;
+    if (a[0]>=a[1]) return false;
+    return isSorted(a.slice(1));
+}
+console.log(isSorted([1,2,2,3]))
+
+function isSortedRed(a){
+    let inizio = [true,-Infinity];
+    let fn = (r,e)=> [(r[0] && r[1]<e),e]
+    return a.reduce(fn,inizio)[0]
+}
+console.log(isSortedRed([1,2,3]))
+
+
+// esercizio 5
+/*
+Scrivere una funzione deframmenta(a), con a array di numeri. 
+La funzione restituisce una copia dell'array a da cui 
+sono state eliminate le occorrenze dei numeri quando queste non sono ripetute in sequenza 
+(ovvero in posizioni contigue dell'array) almeno una volta.
+Ad esempio  dato l'array a = [1,1,2,3,3,3,2,2,4] la chiamata deframmenta(a) restituisce [1,1,3,3,3,2,2], 
+dove gli elementi in posizione 2 e 4 sono stati eliminati in quanto non ripetuti in sequenza.
+Esempi
+deframmenta([1,1,2,3,3,3,2,2,4]) → [1,1,3,3,3,2,2]
+deframmenta([0,0,0,0,0,1,0,1,1]) → [0,0,0,0,0,1,1]
+deframmenta([1,0]) → []
+*/
+function deframmenta(a) {
+    if (a.length < 2) return [];
+    let aDef = [];
+    let tmp = [a[0]]; // qui ci metto le sequenze di numeri uguali temporanei
+    for (let i = 1; i < a.length; i++) { // scorro partendo da i=1
+        if (a[i] == tmp[0]) {
+            tmp.push(a[i]); // accumulo con un push nella lista degli uguali temporanei
+        } else {
+            if (tmp.length > 1) aDef.push(...tmp); // se  ho accumulato più di un elemento allora scarico in aDef
+            tmp = [a[i]]; // re-inizializzo il tmp
+        }
+    }
+    // controllo se scaricare in aDef l'ultimo lotto
+    if (tmp.length > 1) aDef.push(...tmp);
+    return aDef;
+}
+
+let fu = deframmenta;
+console.log('testcase:', fu([1,1,2,3,3,3,2,2,4])) // --> [1,1,3,3,3,2,2]
+console.log('testcase1:', fu([0,0,0,0,0,1,0,1,1])) // --> [0,0,0,0,0,1,1]
+console.log('testcase2:', fu([1,0])) // --> []
+
+
+// esercizio 6
+/*
+Si scriva una funzione fabbrica() che abbia il seguente comportamento.
+Ogni volta che viene invocata, fabbrica(k) restituisce una funzione f tale che 
+la chiamata f() restituisce (sempre) il valore k.
+Esempio
+var f=fabbrica(1)
+var g=fabbrica(2)
+var h=fabbrica(true)
+f() → 1
+g() → 2
+h() → true
+*/
+function fabbrica(k){
+    return ()=>k;
+}
+console.log(fabbrica(5))
+var f=fabbrica(1)
+var g=fabbrica(2)
+var h=fabbrica(true)
+console.log(f())
+console.log(g())
+console.log(h())
+
+
+// esercizio 7
+/*
+Si scriva una funzione partapply(bop,a) che, 
+data una funzione bop con due argomenti, e un valore a, restituisca una funzione che,
+se invocata con un argomento b, ritorni il valore di bop(a,b).
+In altri termini:  ∀ bop,a,b . partapply(bop,a)(b) ≣ bop(a,b)
+Esempi
+Se r=partapply((x,y)=>x+y,1) allora r(5) restituisce 6.
+Se r=partapply((x,y)=>x+y,”d”) allora r(“esisto”) restituisce “desisto”.
+*/
+function partapply(bop,a){
+    return (b)=>bop(a,b)
+}
+//let r=partapply((x,y)=>x+y,1) // r(5) restituisce 6.
+let r=partapply((x,y)=>x+y,"d") // r("esisto") restituisce "desisto".
+console.log(r("esisto"))

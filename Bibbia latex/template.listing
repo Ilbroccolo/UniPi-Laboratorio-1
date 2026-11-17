@@ -1,0 +1,4 @@
+function nomeFunzione(param) {
+    // Logica della funzione
+    return param * 2;
+}

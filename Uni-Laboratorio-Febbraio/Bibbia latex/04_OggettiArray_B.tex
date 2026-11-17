@@ -1,0 +1,151 @@
+\section{Oggetti e Array: Strutture Dati (Lezione 05)}
+
+\subsection{Gli Oggetti (Objects)}
+In JavaScript, gli oggetti sono contenitori per valori con etichetta (proprietà).
+Pensa a un oggetto come a una "cosa" della vita reale. Una macchina ha proprietà come: peso, colore, modello.
+
+\begin{concept}{Struttura: Chiave $\to$ Valore}
+Pensa a un oggetto come a una "cosa" della vita reale. Una macchina ha proprietà come: peso, colore, modello.
+\end{concept}
+\begin{jsbox}
+const auto = {
+    marca: "Fiat",
+    modello: "500",
+    colore: "bianco"
+};
+\end{jsbox}
+
+\subsubsection{Come accedere ai dati}
+Ci sono due modi per leggere una proprietà:
+\begin{enumerate}
+    \item \textbf{Dot Notation (Punto):} \texttt{auto.marca} // "Fiat" (Più comune)
+    \item \textbf{Bracket Notation (Parentesi):} \texttt{auto["marca"]} // "Fiat" (Utile se il nome della proprietà è in una variabile)
+\end{enumerate}
+
+\subsection{Memory: Valori vs Riferimenti}
+Capire come varia la memoria è fondamentale. In JavaScript ci sono due regole diverse.
+
+\subsubsection{1. Tipi Primitivi (Valori)}
+\begin{concept}{Copia per Valore}
+Numeri, Stringhe, Booleani. La variabile contiene \textbf{direttamente} il dato. Se copi, duplichi il dato.
+\end{concept}
+\begin{jsbox}
+let a = 5;
+let b = 5;
+let c = a; // Copio il valore 5
+
+console.log(a == b); // TRUE (5 e' uguale a 5)
+console.log(a == c); // TRUE
+\end{jsbox}
+
+\subsubsection{2. Tipi Complessi (Riferimenti)}
+\begin{concept}{Copia per Riferimento (Il Telecomando)}
+Oggetti, Array, Funzioni.
+La variabile contiene un \textbf{indirizzo di memoria} (un puntatore), non l'oggetto vero e proprio.
+Se copi la variabile, copi solo il puntatore (telecomando), non l'oggetto (TV).
+\end{concept}
+\begin{jsbox}
+let list1 = [1, 2, 3];
+let list2 = [1, 2, 3];
+
+// Sembrano uguali, ma sono due casi diversi in memoria!
+console.log(list1 == list2); // FALSE (Indirizzi diversi)
+
+let list3 = list1; // Copio l'indirizzo (il telecomando)
+console.log(list1 == list3); // TRUE (Puntano allo stesso array)
+\end{jsbox}
+
+\subsubsection{Modifica Condivisa}
+\begin{concept}{Side Effect (Effetto Collaterale)}
+Poiché \texttt{list3} e \texttt{list1} puntano allo stesso oggetto, se ne modifico uno, cambia anche l'altro.
+\end{concept}
+\begin{jsbox}
+list3.push(99);
+console.log(list1); // [1, 2, 3, 99] -> VEDO LA MODIFICA!
+\end{jsbox}
+
+\begin{concept}{Visualizzazione Memoria: Stack vs Heap}
+\begin{itemize}
+    \item \textbf{Stack:} Veloce, per numeri e boolean (Valori).
+    \item \textbf{Heap:} Grande e dinamico, per Oggetti e Array (Riferimenti).
+\end{itemize}
+\end{concept}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=0cm,
+    stacknode/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm, fill=white},
+    heapnode/.style={draw, rectangle, rounded corners, minimum width=3cm, minimum height=1.5cm, fill=niceBlue!10, align=center},
+    label/.style={font=\bfseries\small, color=gray}
+]
+% ... (TikZ Code remained same, simplified here for brevity but assuming user wants it kept) ...
+% Stack
+\node[label] at (0, 3.5) {STACK (Esecuzione)};
+\node[stacknode] (var1) at (0, 2.5) {age = 25};
+\node[stacknode] (var2) at (0, 1.7) {name = "Luca"};
+\node[stacknode, fill=jsYellow!20] (ref) at (0, 0.9) {user = <Ref \#01>};
+
+% Heap
+\node[label] at (6, 3.5) {HEAP (Memoria Oggetti)};
+\node[heapnode] (obj) at (6, 1) {
+    \textbf{Object \#01} \\
+    \{ \\
+    name: "Marco", \\
+    active: true \\
+    \}
+};
+
+% Puntatore
+\draw[-{Stealth[length=3mm]}, thick, color=niceBlue] (ref.east) to[out=0, in=180] node[midway, above, font=\tiny\ttfamily] {Puntatore} (obj.west);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Visualizzazione Array}
+\begin{center}
+\begin{tikzpicture}
+    % Definizione stile matrice array
+    \matrix (A) [matrix of nodes, nodes={draw, minimum size=1cm, anchor=center, fill=white}, column sep=-\pgflinewidth]
+    { 10 & 45 & 22 & 99 & 7 \\ };
+    
+    % Indici
+    \foreach \i [count=\xi from 0] in {1,...,5}
+        \node[above=0.1cm of A-1-\i, font=\ttfamily\tiny, color=gray] {\xi};
+        
+    % Etichetta
+    \node[left=0.5cm of A, font=\bfseries] {const arr = };
+    
+    % Freccia puntatore
+    \draw[<-] (A-1-3.south) -- ++(0, -0.5) node[below, font=\small] {arr[2]};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Array (Vettori)}
+\begin{concept}{Lista Ordinata}
+Un array è una variabile speciale che può contenere più valori in una lista ordinata $(0, 1, 2, \dots)$.
+\end{concept}
+\begin{jsbox}
+const frutta = ["Mela", "Banana", "Pera"];
+console.log(frutta[0]); // "Mela"
+\end{jsbox}
+
+\subsubsection{Aggiungere e Rimuovere Elementi}
+\begin{concept}{Stack Operations}
+Immagina l'array come una pila di piatti.
+\begin{itemize}
+    \item \textbf{push(x):} Aggiunge in fondo. (Veloce)
+    \item \textbf{pop():} Toglie dal fondo. (Veloce)
+\end{itemize}
+\end{concept}
+\begin{jsbox}
+let numeri = [1, 2];
+numeri.push(3);    // [1, 2, 3]
+numeri.pop();      // [1, 2]
+numeri.unshift(0); // [0, 1, 2]
+\end{jsbox}
+
+\subsection{Esercizi di Applicazione}
+Per consolidare questi concetti, la lezione propone due sfide:
+\begin{enumerate}
+    \item \textbf{Gestione Inventario:} Creare un sistema che accumula coppie "Prodotto-Quantità" inserite dall'utente, fermandosi quando si digita "stop". Qui l'oggetto funge da database in memoria.
+    \item \textbf{Media Voti:} Un programma che permette di inserire voti per vari studenti e, al termine, calcola la media per ciascuno. Questo esercizio combina probabilmente array (per i voti) e oggetti (per associare voti agli studenti).
+\end{enumerate}

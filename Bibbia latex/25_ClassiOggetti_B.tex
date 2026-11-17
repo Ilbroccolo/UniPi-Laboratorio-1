@@ -1,0 +1,232 @@
+\section{Introduzione e Prototipi}
+
+\begin{definition}{Chiarimento sui diabolici \texttt{\_\_proto\_\_} e \texttt{prototype}}
+La chiave \texttt{prototype} ce l'hanno solo le funzioni, mentre la chiave \texttt{\_\_proto\_\_} ce l'hanno tutti gli oggetti (e in particolare anche le funzioni). 
+Dato un oggetto $o$, il suo prototipo è l'oggetto \texttt{o.\_\_proto\_\_} (che può essere null, se siamo arrivati al termine della catena di prototipi).
+\end{definition}
+
+Data una funzione \texttt{fun}, essa possiede la chiave \texttt{prototype}. Se \texttt{fun} costruisce $o$ allora risulta vera l'uguaglianza:
+\begin{equation}
+\texttt{fun.prototype === o.\_\_proto\_\_}
+\end{equation}
+(\texttt{fun.\_\_proto\_\_} è la funzione prototipo di tutte le funzioni, che è un oggetto diverso da \texttt{o.\_\_proto\_\_}).
+
+\section{Dichiarazioni ed Espressioni-Classe}
+
+\subsection{Traduzione delle dichiarazioni in Pseudocodice}
+La definizione di una classe e dei suoi metodi viene tradotta assegnando il costruttore alla funzione stessa e agganciando i metodi al \texttt{prototype}.
+
+\begin{jsbox}[title={Traduzione in Pseudocodice}]
+// JavaScript
+class Persona {
+  constructor(nome, eta) {
+    this.nome = nome;
+    this.eta = eta;
+  }
+  compleanno() { this.eta++; }
+}
+
+// Pseudocodice corrispondente
+function Persona(this, nome, eta) {
+  this.nome = nome;
+  this.eta = eta;
+  this.__proto__ = Persona.prototype;
+}
+Persona.prototype = {
+  constructor: Persona,
+  compleanno: function(this) { this.eta++; }
+}
+\end{jsbox}
+
+\subsection{Espressioni-Classe}
+Finora abbiamo visto le classi come dichiarazioni. Esiste però anche la variante espressione (come per le \texttt{function}):
+\begin{jsbox}[title={Espressione Classe}]
+var Persona = class {
+  constructor(n, e) {
+    this.nome = n;
+    this.eta = e;
+  }
+  compleanno() { this.eta++; }
+}
+var pippo = new Persona("Pippo", 35);
+\end{jsbox}
+
+\section{Ereditarietà}
+
+Il meccanismo dei prototipi spiega come mai alcuni oggetti sembrano avere tante proprietà (e metodi) che non sono ``dentro'' l'oggetto.
+
+\begin{definition}{Meccanismo di ricerca dei Prototipi}
+\begin{itemize}
+    \item Ogni oggetto ha un prototipo (tranne il prototipo di \texttt{Object}).
+    \item Lettura di una proprietà:
+    \begin{enumerate}
+        \item Se la chiave è presente, il valore è quello della chiave nell'oggetto.
+        \item Se non è presente e l'oggetto ha un prototipo, si cerca nel prototipo.
+        \item Se non è presente e l'oggetto non ha prototipo, il risultato è \texttt{undefined}.
+    \end{enumerate}
+    \item Scrittura: la chiave e il valore vengono inseriti nell'oggetto, eventualmente sovrascrivendo.
+\end{itemize}
+\end{definition}
+
+\subsection{Sottoclassi e Overriding}
+È possibile impostare il prototipo di una nuova classe ad un'altra classe. La sottoclasse può aggiungere ulteriori metodi esclusivi delle proprie istanze.
+
+\begin{jsbox}[title={Uso di extends}]
+class Studente extends Persona {
+  laurea() { return "Evviva!"; }
+}
+var ugo = new Studente("Ugo", 19);
+ugo.laurea(); // "Evviva!"
+\end{jsbox}
+
+Una sottoclasse può ridefinire (in inglese \textit{overriding}) un metodo già definito nella sua superclasse. Un'istanza può anche cancellare o sovrascrivere un metodo della propria classe.
+
+\subsection{La parola chiave \texttt{super}}
+\begin{definition}{\texttt{super}}
+La parola chiave \texttt{super} è un riferimento alla superclasse di un oggetto, così come \texttt{this} è un riferimento all'oggetto su cui il metodo è invocato. Informalmente significa: ``parti dal prototipo del padre, non da quello corrente''.
+\end{definition}
+
+\texttt{super()} è obbligatorio se si vuole definire il \texttt{constructor} di una classe derivata (\texttt{extends}). Chiama il costruttore della superclasse e inizializza le proprietà sull'oggetto istanza \texttt{this}.
+
+\subsection{Ereditarietà e Diagrammi UML}
+I diagrammi delle classi si disegnano spesso usando il linguaggio di modellazione UML.
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm and 2cm,
+    classbox/.style={
+        rectangle, draw=black, thick, fill=white, 
+        minimum width=3.5cm, align=left,
+        rectangle split, rectangle split parts=3,
+        font=\sffamily\footnotesize
+    },
+    arrow/.style={-{Stealth[scale=1.5, fill=white]}, thick}
+]
+    % Persona
+    \node[classbox] (persona) {
+        \textbf{Persona}
+        \nodepart{two}
+        nome\\eta
+        \nodepart{three}
+        compleanno()
+    };
+    
+    % Studente
+    \node[classbox, below=1cm of persona] (studente) {
+        \textbf{Studente}
+        \nodepart{two}
+        \nodepart{three}
+        laurea()
+    };
+    
+    % StMagistrale
+    \node[classbox, below left=1.5cm and -0.5cm of studente] (magistrale) {
+        \textbf{StMagistrale}
+        \nodepart{two}
+        \nodepart{three}
+        laurea()
+    };
+    
+    % Liceale
+    \node[classbox, below right=1.5cm and -0.5cm of studente] (liceale) {
+        \textbf{Liceale}
+        \nodepart{two}
+        \#iscritto\\quanti
+        \nodepart{three}
+        unipi()\\bellaVita()
+    };
+
+    % Arrows
+    \draw[arrow] (studente.north) -- (persona.south);
+    \draw[thick] (magistrale.north) -- ++(0,0.5) -| (studente.south);
+    \draw[arrow] (liceale.north) -- ++(0,0.5) -| (studente.south);
+
+\end{tikzpicture}
+\end{center}
+
+Ogni istanza di una classe è anche istanza di tutte le sue superclassi (verificabile tramite \texttt{instanceof}).
+
+\section{Dichiarazioni di campo, Membri privati e statici}
+
+JavaScript è in rapida evoluzione (standard ECMAScript 2022).
+\begin{itemize}
+    \item \textbf{Dichiarazioni di campo:} Proprietà dichiarate direttamente nella classe (es. \texttt{nome="anonimo"}).
+    \item \textbf{Membri privati:} I campi che iniziano per \texttt{\#} sono visibili solo all'interno della classe. Non partecipano alla catena dei prototipi e generano errore se vi si accede dall'esterno.
+    \item \textbf{Membri statici:} Introdotti dalla parola chiave \texttt{static}, sono proprietà della classe stessa, non delle singole istanze.
+\end{itemize}
+
+\section{Getter \& Setter (Metodi di accesso)}
+Consentono di ``simulare'' la presenza di una proprietà in un oggetto; letture e scritture causano l'esecuzione di un metodo anziché alterare il dizionario dell'oggetto.
+
+\begin{jsbox}[title={Sintassi Getter e Setter}]
+let o = {
+  get x() { return 1; },
+  set x(v) { /* ... */ }
+}
+\end{jsbox}
+
+\begin{definition}{Ricerca di Getter e Setter}
+\begin{itemize}
+    \item Lettura: se la chiave trovata è un getter, si invoca la funzione e il valore è quello restituito.
+    \item Scrittura: se la chiave è un setter, si invoca la funzione passando il valore assegnato.
+    \item I getter e setter vengono \textbf{ereditati} (cercati lungo la catena dei prototipi).
+\end{itemize}
+\end{definition}
+
+\section{Generatori}
+I generatori sono funzioni che possono restituire il controllo al chiamante, per poi riprendere la computazione da dove si era rimasti.
+
+\begin{definition}{Sintassi e Iterazione}
+\begin{itemize}
+    \item Dichiarazione: \texttt{function* f() \{\}} oppure \texttt{*metodo() \{\}}.
+    \item \texttt{yield expr}: restituisce il valore e riprende l'esecuzione dal comando successivo al rientro.
+    \item Iterazione: tramite il metodo \texttt{next()}, che restituisce un oggetto \texttt{\{value: ..., done: boolean\}}. Spesso percorsi con \texttt{for (... of ...)}.
+\end{itemize}
+\end{definition}
+
+\subsection{Caratteristiche aggiuntive dei Generatori}
+\begin{itemize}
+    \item \textbf{Parametri nel next()}: Il valore passato a \texttt{next(v)} diventa il valore di ritorno della \texttt{yield}.
+    \item \textbf{return(v)}: Termina l'iterazione comportandosi come un \texttt{return v}.
+    \item \textbf{throw(e)}: Termina l'iterazione lanciando un'eccezione.
+    \item \textbf{Generatori ricorsivi}: \texttt{yield* E} restituisce tutti i valori iterabili da \texttt{E} e poi procede. Comodo per delegare la generazione.
+\end{itemize}
+
+\section{Esercizi}
+
+\subsection{Esercizio 1: Coda (Queue)}
+Si definisca una classe \texttt{Queue} che implementi una coda FIFO (First In First Out) offrendo i metodi \texttt{put(x)}, \texttt{get()}, \texttt{size()}, \texttt{empty()}, \texttt{toString()}.
+
+\begin{jsbox}[title={Soluzione: Queue}]
+class Queue {
+  #array = [];
+  put(x) { this.#array[this.#array.length] = x; }
+  get() {
+    let x = this.#array[0];
+    this.#array = this.#array.slice(1);
+    return x;
+  }
+  size() { return this.#array.length; }
+  empty() { return this.#array.length == 0; }
+  toString() { return `Queue with ${this.size()} elements`; }
+}
+\end{jsbox}
+
+\subsection{Esercizio 2: Coda Limitata (LimitedQueue)}
+Si definisca una classe \texttt{LimitedQueue} che estenda la coda FIFO con una dimensione massima \texttt{max\_size} e il metodo aggiuntivo \texttt{full()}.
+
+\begin{jsbox}[title={Soluzione: LimitedQueue}]
+class LimitedQueue extends Queue {
+  #max_size;
+  constructor(max_size) {
+    super();
+    this.#max_size = max_size;
+  }
+  put(x) {
+    if(this.full()) { console.log('Queue is full!!'); } 
+    else { super.put(x); }
+  }
+  full() { return this.size() == this.#max_size; }
+  toString() { return super.toString() + ` of ${this.#max_size}`; }
+}
+\end{jsbox}

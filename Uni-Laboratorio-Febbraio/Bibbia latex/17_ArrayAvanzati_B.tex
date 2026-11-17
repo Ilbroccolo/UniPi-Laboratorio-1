@@ -1,0 +1,92 @@
+\section{Manipolazione Avanzata di Array e Variadicità (Lez. 17)}
+
+\subsection{Destructuring (Spacchettare gli Array)}
+Possiamo estrarre valori da un array e metterli in variabili "spacchettandoli" direttamente con le parentesi quadre.
+
+\begin{concept}{Visualizzazione: Destructuring}
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1cm,
+    varbox/.style={draw, rectangle, fill=jsYellow!30, minimum size=0.8cm, font=\ttfamily\bfseries},
+    valbox/.style={draw, rectangle, fill=white, minimum size=0.8cm, font=\ttfamily},
+    arrow/.style={->, thick, color=violet}
+]
+    % Variabili
+    \node (let) {let [};
+    \node[varbox, right=0.1cm of let] (x) {x};
+    \node[right=0.1cm of x] (comma) {,};
+    \node[varbox, right=0.1cm of comma] (y) {y};
+    \node[right=0.1cm of y] (eq) {] = [};
+    
+    % Valori
+    \node[valbox, right=0.1cm of eq] (v1) {10};
+    \node[right=0.1cm of v1] (comma2) {,};
+    \node[valbox, right=0.1cm of comma2] (v2) {20};
+    \node[right=0.1cm of v2] (end) {];};
+
+    % Frecce Mappatura
+    \draw[arrow] (v1.north) to[out=90, in=90] (x.north);
+    \draw[arrow] (v2.south) to[out=-90, in=-90] (y.south);
+\end{tikzpicture}
+\end{center}
+\end{concept}
+
+\begin{jsbox}
+let coordinate = [10, 20];
+let [x, y] = coordinate;
+console.log(x); // 10
+console.log(y); // 20
+\end{jsbox}
+
+\subsection{Rest Operator (...)}
+I tre puntini \texttt{...} servono a dire "tutto il resto". È utilissimo per prendere la testa e la coda di una lista.
+
+\begin{concept}{Visualizzazione: Rest Operator}
+\begin{center}
+\begin{tikzpicture}[
+    valbox/.style={draw, rectangle, fill=white, minimum size=0.8cm},
+    headbox/.style={draw, rectangle, fill=codeGreen!30, minimum size=0.8cm},
+    tailbox/.style={draw, rectangle, fill=codePink!30, minimum size=0.8cm}
+]
+    \node[headbox] (n1) at (0,0) {1};
+    \node[tailbox] (n2) at (1,0) {2};
+    \node[tailbox] (n3) at (2,0) {3};
+    \node[tailbox] (n4) at (3,0) {4};
+    
+    \node[below=0.5cm of n1, font=\bfseries\color{codeGreen}] {primo};
+    
+    \draw[decorate, decoration={brace, amplitude=10pt, mirror}, thick] (0.5, -0.2) -- (3.5, -0.2);
+    \node[below=0.8cm of n2, xshift=0.5cm, font=\bfseries\color{codePink}] {...altri};
+\end{tikzpicture}
+\end{center}
+\end{concept}
+
+\begin{jsbox}
+let numeri = [1, 2, 3, 4, 5];
+let [primo, ...altri] = numeri;
+
+console.log(primo); // 1
+console.log(altri); // [2, 3, 4, 5]
+\end{jsbox}
+
+\subsection{Funzioni Variadiche (Argomenti Variabili)}
+Ecco un esempio di funzione che usa il Rest Operator. Usiamo il nuovo **Box Viola** per le funzioni speciali.
+
+\begin{funcbox}[title=Funzione Math Universale]
+function matematica(operatore, ...numeri) {
+    // 'numeri' diventa un ARRAY con tutti gli extra
+    // Esempio: matematica("+", 1, 2, 3) --> numeri = [1, 2, 3]
+    
+    if (operatore === "+") {
+        return numeri.reduce((tot, n) => tot + n, 0);
+    }
+    if (operatore === "*") {
+        return numeri.reduce((tot, n) => tot * n, 1);
+    }
+}
+\end{funcbox}
+
+\begin{jsbox}
+console.log(matematica("+", 1, 2, 3)); // 6
+console.log(matematica("*", 2, 2, 2, 2)); // 16
+\end{jsbox}

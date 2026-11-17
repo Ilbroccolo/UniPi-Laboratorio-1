@@ -1,0 +1,185 @@
+\section{L'identità segreta degli oggetti: Prototipi e Classi}
+
+\subsection{Recap: Valori, Riferimenti e Indirezione}
+In JavaScript, la distinzione tra tipi base e complessi è fondamentale:
+\begin{itemize}
+    \item \textbf{Tipi Base:} (booleani, numeri, stringhe) $\rightarrow$ Semantica per \textbf{valore}.
+    \item \textbf{Tipi Complessi:} (oggetti, array, funzioni) $\rightarrow$ Semantica per \textbf{riferimento}.
+\end{itemize}
+
+La semantica per riferimento utilizza indirizzi di memoria come valori. L'accesso ai dati avviene tramite operazioni di \textbf{indirezione} (spesso implicite in JS).
+
+\begin{definition}{Operazioni di Indirezione}
+    \begin{itemize}
+        \item \texttt{oggetto.chiave}: Va in memoria all'indirizzo dell'oggetto, cerca la chiave e restituisce il contenuto.
+        \item \texttt{array[indice]}: Analogo al precedente, usando l'indice come chiave.
+        \item \texttt{funzione(...)}: Va in memoria a recuperare la definizione ed esegue il codice.
+    \end{itemize}
+\end{definition}
+
+\subsection{Identità vs Uguaglianza: Il caso dei Grafi}
+L'uso dei riferimenti è cruciale nelle strutture dati complesse come i grafi, dove lo \textbf{stesso} oggetto nodo può essere puntato da molteplici archi.
+
+\begin{concept}{Identità}
+Dire "lo stesso oggetto" (Identità) non è come dire "un oggetto uguale" (Uguaglianza).
+\begin{itemize}
+    \item \textbf{Uguaglianza:} Due oggetti distinti con lo stesso contenuto (es. \texttt{\{val:1\}} e \texttt{\{val:1\}}).
+    \item \textbf{Identità:} Due riferimenti che puntano alla stessa area di memoria.
+\end{itemize}
+\end{concept}
+
+Per modellare un grafo $G=\langle N,E\rangle$ dove più archi insistono sullo stesso nodo, è indispensabile usare variabili che contengano i riferimenti ai nodi, e riutilizzare quelle variabili nella creazione degli archi.
+
+\subsection{Costruttori e l'Operatore \texttt{new}}
+Per garantire che gli oggetti abbiano sempre la struttura corretta (campi giusti), si usano funzioni \textbf{costruttori}.
+
+\subsubsection{Funzionamento di \texttt{new}}
+L'operatore \texttt{new}, anteposto a una chiamata di funzione, altera il comportamento standard:
+\begin{enumerate}
+    \item \textbf{Allocazione:} Crea un nuovo oggetto vuoto (chiamiamolo \textit{o}).
+    \item \textbf{Invocazione:} Chiama la funzione costruttore impostando \texttt{this = o}.
+    \item \textbf{Arricchimento:} Il codice della funzione usa \texttt{this} per aggiungere proprietà e metodi a \textit{o}.
+    \item \textbf{Ritorno:} Restituisce implicitamente \textit{o}.
+\end{enumerate}
+
+\begin{jsbox}[title={Confronto Costruttori}]
+// 1. Factory Function (Sconsigliato - crea oggetti, non istanze legate)
+function grafo(N, E) {
+    return { nodi: N, archi: E, size() { return this.nodi.length } };
+}
+
+// 2. Constructor Function con 'new' (Standard pre-ES6)
+function Grafo(N, E) {
+    this.nodi = N;
+    this.archi = E;
+    // this è l'oggetto appena creato da new
+}
+var g = new Grafo([], []);
+\end{jsbox}
+
+\subsection{I Prototipi}
+Il meccanismo dei prototipi permette agli oggetti di ereditare funzionalità senza duplicarle in memoria.
+
+\begin{definition}{Algoritmo di Lookup delle Proprietà}
+Quando si accede a \texttt{obj.key}:
+\begin{enumerate}
+    \item JS cerca \texttt{key} direttamente in \texttt{obj}. Se trovata, restituisce il valore.
+    \item Se non trovata, cerca nel \textbf{prototipo} di \texttt{obj}.
+    \item Continua a risalire la catena dei prototipi.
+    \item Se arriva a un prototipo \texttt{null} (fine catena) e non ha trovato nulla, restituisce \texttt{undefined}.
+\end{enumerate}
+\textit{Nota: La scrittura avviene sempre sull'oggetto stesso, mai sul prototipo.}
+\end{definition}
+
+\subsubsection{Visualizzazione della Catena}
+Possiamo ispezionare il prototipo con \texttt{Object.getPrototypeOf(o)} o la proprietà deprecata \texttt{\_\_proto\_\_}.
+
+\begin{center}
+\begin{tikzpicture}[
+    object/.style={rectangle, draw=paletteIndigo, fill=white, thick, minimum width=2.5cm, minimum height=1.5cm, align=center, drop shadow={opacity=0.3, shadow xshift=1mm, shadow yshift=-1mm}},
+    pointer/.style={->, >=stealth, thick, color=paletteRegalia},
+    node distance=1.5cm and 2.5cm
+]
+
+% Oggetto array
+\node[object, fill=paletteLavender!20] (arr) {\textbf{Array} \texttt{a} \\ \texttt{[1, 5, 7]} \\ \footnotesize \texttt{\_\_proto\_\_: ?}};
+
+% Array Prototype
+\node[object, right=of arr, fill=paletteLavender!40] (arrProto) {\textbf{Array.prototype} \\ \textit{push, pop, map...} \\ \footnotesize \texttt{\_\_proto\_\_: ?}};
+
+% Object Prototype
+\node[object, right=of arrProto, fill=paletteLavender!60] (objProto) {\textbf{Object.prototype} \\ \textit{toString...} \\ \footnotesize \texttt{\_\_proto\_\_: null}};
+
+% Null
+\node[draw=none, right=of objProto, color=gray] (null) {\textbf{null}};
+
+% Collegamenti
+\draw[pointer] (arr.east) -- node[above, font=\footnotesize\itshape]{prototipo} (arrProto.west);
+\draw[pointer] (arrProto.east) -- node[above, font=\footnotesize\itshape]{prototipo} (objProto.west);
+\draw[pointer] (objProto.east) -- (null.west);
+
+\end{tikzpicture}
+\end{center}
+
+\begin{warning}{Enumerabilità}
+Il ciclo \texttt{for (k in o)} e \texttt{Object.keys(o)} restituiscono solo le chiavi \textbf{proprie} dell'oggetto, ignorando quelle ereditate dal prototipo.
+\end{warning}
+
+\subsection{Prototipi e Costruttori: Il Doppio Salto Carpiato}
+Esiste un legame simbiotico tra una funzione costruttore e i prototipi degli oggetti che essa crea.
+
+\begin{concept}{Proprietà \texttt{.prototype}}
+Ogni funzione \texttt{F} ha una proprietà \texttt{F.prototype}. Quando chiamiamo \texttt{new F()}, l'oggetto creato riceve automaticamente \texttt{F.prototype} come suo prototipo interno (\texttt{\_\_proto\_\_}).
+\end{concept}
+
+Questo permette di definire metodi una sola volta nel prototipo del costruttore, rendendoli disponibili a tutte le istanze:
+\begin{jsbox}[title={Pattern Costruttore + Prototipo}]
+function Persona(n, e) {
+    this.nome = n; // Stato interno (diverso per ogni istanza)
+    this.età = e;
+}
+// Comportamento condiviso (uguale per tutte le istanze)
+Persona.prototype.compleanno = function() { this.età++; };
+
+var p = new Persona("Pippo", 35);
+// p.__proto__ === Persona.prototype è TRUE
+\end{jsbox}
+
+\subsection{Le Classi (Syntactic Sugar)}
+Le versioni recenti di JavaScript introducono la keyword \texttt{class}. Non è un nuovo modello a oggetti, ma una sintassi più pulita sopra il sistema prototipale esistente.
+
+\begin{jsbox}[title={Sintassi Class}]
+class Persona {
+    constructor(nome, eta) {
+        this.nome = nome;
+        this.età = eta;
+    }
+
+    compleanno() {
+        this.età++;
+    }
+}
+\end{jsbox}
+
+\subsubsection{Cosa accade dietro le quinte?}
+Anche usando \texttt{class}:
+\begin{itemize}
+    \item \texttt{typeof Persona} restituisce \textbf{"function"}.
+    \item I metodi definiti nella classe (es. \texttt{compleanno}) finiscono in \texttt{Persona.prototype}.
+    \item Le proprietà definite nel costruttore (es. \texttt{nome}) finiscono direttamente nell'istanza oggetto.
+\end{itemize}
+
+\subsection{La "Mappa Proibita" (Struttura Profonda di JS)}
+Le slide finali mostrano la struttura ricorsiva e intrecciata di JS. Ecco la logica:
+
+\begin{itemize}
+    \item \textbf{Ogni funzione è un oggetto:} Quindi \texttt{Array} (il costruttore) ha come prototipo \texttt{Function.prototype}.
+    \item \textbf{Function.prototype è un oggetto:} Quindi il suo prototipo è \texttt{Object.prototype}.
+    \item \textbf{Object è una funzione:} Il suo prototipo è \texttt{Function.prototype}.
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=2.5cm,
+    entity/.style={rectangle, draw=paletteRegalia, fill=white, thick, minimum size=1.2cm, drop shadow, rounded corners, align=center},
+    proto/.style={->, >=stealth, dashed, color=gray!80, thick},
+    prop/.style={->, >=stealth, color=paletteIndigo, thick}
+]
+
+\node[entity] (funcProto) {Function.prototype};
+\node[entity, below=of funcProto] (objProto) {Object.prototype};
+\node[entity, right=of funcProto] (ArrayConst) {Array\\(Funzione)};
+\node[entity, below=of ArrayConst] (ArrProto) {Array.prototype};
+\node (null) [right=of objProto] {\textbf{null}};
+
+% Relazioni
+\draw[proto] (ArrayConst) -- node[above]{\tiny \_\_proto\_\_} (funcProto);
+\draw[proto] (funcProto) -- node[right]{\tiny \_\_proto\_\_} (objProto);
+\draw[proto] (ArrProto) -- node[below]{\tiny \_\_proto\_\_} (objProto);
+\draw[proto] (objProto) -- (null);
+
+% Relazione prototype
+\draw[prop] (ArrayConst) -- node[left]{\footnotesize .prototype} (ArrProto);
+
+\end{tikzpicture}
+\end{center}

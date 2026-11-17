@@ -1,0 +1,100 @@
+\section{Capitolo 1: Strutture Dati (Array, Set, Alberi)}
+
+\begin{esercizio}{Es. 1: Il "Flatten" Manuale (Array Annidati)}
+\textbf{TRACCIA:} Scrivere una funzione ricorsiva `appiattisci(arr)` che prende un array che può contenere numeri o altri array (annidamento infinito) e restituisce un unico array piatto con tutti i numeri.
+\textit{Non usare `flat()` nativo.}
+
+\textbf{Esempio:} `[1, [2, [3, 4]], 5]` $\to$ `[1, 2, 3, 4, 5]`
+\end{esercizio}
+
+\begin{jsbox}
+function appiattisci(arr) {
+    let risultato = [];
+    
+    for (let i = 0; i < arr.length; i++) {
+        let el = arr[i];
+        
+        if (Array.isArray(el)) {
+            // Se è un array, chiamata ricorsiva!
+            let sottoArrayPiatto = appiattisci(el);
+            // Concateno i risultati
+            for (let j = 0; j < sottoArrayPiatto.length; j++) {
+                risultato.push(sottoArrayPiatto[j]);
+            }
+        } else {
+            // Se è un numero, lo aggiungo
+            risultato.push(el);
+        }
+    }
+    return risultato;
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 2: Multi-Insieme da Stringa}
+\textbf{TRACCIA:} Data una stringa, creare un oggetto che rappresenti il "Multi-Insieme" dei caratteri (conteggio frequenze), ma ignorando gli spazi.
+
+\textbf{Esempio:} `"a b a"` $\to$ `\{ "a": 2, "b": 1 \}`
+\end{esercizio}
+
+\begin{jsbox}
+function contaCaratteri(testo) {
+    let frequenze = {};
+    
+    for (let i = 0; i < testo.length; i++) {
+        let char = testo[i];
+        if (char === " ") continue; // Salta spazi
+        
+        if (frequenze[char]) {
+            frequenze[char]++;
+        } else {
+            frequenze[char] = 1;
+        }
+    }
+    return frequenze;
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 3: Alberi Binari - Somma Foglie}
+\textbf{TRACCIA:} Dato un albero binario (oggetti con `val`, `sx`, `dx`), restituire la somma dei valori delle sole \textbf{foglie} (nodi senza figli).
+
+\textbf{Struttura:} `Nodo = { val: number, sx: Nodo | null, dx: Nodo | null }`
+\end{esercizio}
+
+\begin{jsbox}
+function sommaFoglie(nodo) {
+    if (!nodo) return 0;
+    
+    // È una foglia? (Nessun figlio)
+    if (!nodo.sx && !nodo.dx) {
+        return nodo.val;
+    }
+    
+    // Altrimenti somma ricorsivamente i sottoalberi
+    return sommaFoglie(nodo.sx) + sommaFoglie(nodo.dx);
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 4: Intersezione di N Array}
+\textbf{TRACCIA:} Scrivere una funzione che accetta un array di array (matrice) e restituisce un array contenente solo gli elementi presenti in \textbf{tutti} i sotto-array.
+
+\textbf{Esempio:} `[[1, 2, 3], [2, 3, 4], [2, 5, 3]]` $\to$ `[2, 3]`
+\end{esercizio}
+
+\begin{jsbox}
+function intersezioneTutti(matrice) {
+    if (matrice.length === 0) return [];
+    
+    // Parto dai candidati del primo array
+    let candidati = matrice[0];
+    
+    // Per ogni array successivo, filtro i candidati
+    for (let i = 1; i < matrice.length; i++) {
+        let arrayCorrente = matrice[i];
+        
+        // Tengo solo chi esiste anche qui
+        candidati = candidati.filter(x => arrayCorrente.includes(x));
+    }
+    
+    return candidati;
+}
+\end{jsbox}

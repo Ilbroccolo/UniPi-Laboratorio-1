@@ -1,0 +1,130 @@
+\section{Alberi Binari (Lab 18)}
+
+\subsection{Cos'è un Albero Binario?}
+È una struttura gerarchica (come le cartelle del PC).
+Ogni elemento si chiama **Nodo** e può avere massimo due figli:
+\begin{enumerate}
+    \item **Left** (Sinistro)
+    \item **Right** (Destro)
+\end{enumerate}
+
+\subsubsection{Immaginiamolo visivamente}
+\begin{center}
+\begin{tikzpicture}[
+    level distance=1.5cm,
+    sibling distance=2.5cm,
+    every node/.style={circle, draw, minimum size=0.8cm, fill=niceBlue!10, font=\bfseries},
+    edge from parent/.style={draw, thick, -latex}
+]
+
+\node {10}
+    child { node {5}
+        child { node {2} }
+        child { node {7} }
+    }
+    child { node {15}
+        child { node {12} }
+        child { node {20} }
+    };
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{Rappresentazione in JS}
+Non servono classi complesse, bastano oggetti.
+\begin{lstlisting}[language=JavaScript]
+let nodoS = { val: 5, left: null, right: null };
+let nodoD = { val: 10, left: null, right: null };
+let root  = { val: 7, left: nodoS, right: nodoD };
+\end{lstlisting}
+
+\subsection{Come visitare un Albero (Traversals)}
+Dobbiamo passare per tutti i nodi. Ci sono vari modi.
+
+\subsubsection{1. Visita in Profondità (DFS)}
+\begin{concept}{Strategie DFS}
+Andiamo giù il più possibile, poi torniamo indietro (ricorsione).
+\begin{itemize}
+    \item **Pre-Order:** IO $\to$ SX $\to$ DX
+    \item **In-Order:** SX $\to$ IO $\to$ DX
+    \item **Post-Order:** SX $\to$ DX $\to$ IO
+\end{itemize}
+\end{concept}
+
+\begin{jsbox}
+// Pre-Order: IO -> SX -> DX
+function preOrder(nodo) {
+    if (!nodo) return;
+    console.log(nodo.val);
+    preOrder(nodo.left);
+    preOrder(nodo.right);
+}
+
+// In-Order: SX -> IO -> DX
+function inOrder(nodo) {
+    if (!nodo) return;
+    inOrder(nodo.left);
+    console.log(nodo.val);
+    inOrder(nodo.right);
+}
+
+// Post-Order: SX -> DX -> IO
+function postOrder(nodo) {
+    if (!nodo) return;
+    postOrder(nodo.left);
+    postOrder(nodo.right);
+    console.log(nodo.val);
+}
+\end{jsbox}
+
+\subsubsection{2. Visita in Ampiezza (BFS)}
+\begin{concept}{Strategia BFS (Queue)}
+Visitiamo livello per livello (prima tutti i figli, poi tutti i nipoti).
+Serve una **Coda (Queue)** per ricordarsi quali nodi visitare.
+\end{concept}
+
+\begin{jsbox}
+function bfs(root) {
+    let coda = [root]; // Inizio con la radice
+    while (coda.length > 0) {
+        let n = coda.shift(); // Prendo il primo
+        console.log(n.val);
+        
+        if (n.left) coda.push(n.left);   // Aggiungo i figli in fondo
+        if (n.right) coda.push(n.right);
+    }
+}
+\end{jsbox}
+
+\subsection{Alberi Binari di Ricerca (BST)}
+Un albero speciale dove per ogni nodo:
+\begin{itemize}
+    \item Tutto ciò che è a \textbf{Sinistra} è \textbf{Minore}.
+    \item Tutto ciò che è a \textbf{Destra} è \textbf{Maggiore}.
+\end{itemize}
+
+\subsubsection{Ricerca in un BST}
+È velocissima (come la Binary Search negli array).
+\begin{lstlisting}[language=JavaScript]
+function search(nodo, x) {
+    if (!nodo) return false;      // Non trovato
+    if (nodo.val == x) return true; // Trovato!
+    
+    if (x < nodo.val) return search(nodo.left, x); // Cerca a sinistra
+    return search(nodo.right, x); // Cerca a destra
+}
+\end{lstlisting}
+
+\subsubsection{Inserimento in un BST}
+Per inserire, scendiamo finché non troviamo un posto vuoto (`null`).
+\begin{lstlisting}[language=JavaScript]
+function insert(nodo, val) {
+    if (!nodo) return { val: val, left: null, right: null };
+    
+    if (val < nodo.val) {
+        nodo.left = insert(nodo.left, val);
+    } else {
+        nodo.right = insert(nodo.right, val);
+    }
+    return nodo;
+}
+\end{lstlisting}

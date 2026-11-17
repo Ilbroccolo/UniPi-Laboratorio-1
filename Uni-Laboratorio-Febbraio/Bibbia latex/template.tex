@@ -1,0 +1,248 @@
+\documentclass[a4paper,11pt]{article}
+
+% --- Pacchetti Fondamentali ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+% --- Font Moderni ---
+\usepackage{lmodern}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault} % Usa sans-serif per tutto il documento
+
+% --- Colori e Grafica ---
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usetikzlibrary{shapes, arrows.meta, positioning, chains, fit, calc, matrix, trees, backgrounds}
+
+% --- Definizione Colori (Light Theme + Orange + New Cover Colors)
+\definecolor{mainOrange}{RGB}{255, 140, 0}
+\definecolor{jsYellow}{HTML}{F7DF1E}
+\definecolor{codeBg}{gray}{0.95}
+\definecolor{codeBlue}{HTML}{0000FF}
+\definecolor{codePink}{HTML}{800080}
+\definecolor{codeGreen}{HTML}{008000}
+\definecolor{niceBlue}{HTML}{2E86C1}
+\definecolor{jsDark}{HTML}{282C34}    % Grigio scuro (stile editor codice)
+\definecolor{tsBlue}{HTML}{3178C6}    % Blu TypeScript
+\definecolor{textGray}{RGB}{100, 100, 100}
+
+% --- COMANDO COPERTINA (Pure TikZ - No Geometry Hacks) ---
+\newcommand{\customcover}[2]{
+    \begin{titlepage}
+    \thispagestyle{empty}
+    \begin{tikzpicture}[remember picture, overlay]
+        
+        % 1. Sfondo Laterale (Scuro)
+        \fill[jsDark] (current page.north west) rectangle ($(current page.south west) + (4cm,0)$);
+        
+        % 2. Linea Accento (Giallo)
+        \draw[jsYellow, line width=4pt] ($(current page.north west) + (4.2cm,-2cm)$) -- ($(current page.south west) + (4.2cm,2cm)$);
+        
+        % 3. Contenuto Testuale
+        \node[anchor=north, inner sep=0, text width=12cm, align=center] at ($(current page.north west) + (12.5cm,-5cm)$) {
+            
+                {\fontsize{18}{22}\selectfont \textcolor{textGray}{Università di Pisa}}\\[0.2cm]
+                {\fontsize{16}{20}\selectfont \textcolor{textGray}{Corso di Laurea in Informatica}}\\[2cm]
+                
+                {\fontsize{60}{70}\selectfont \textbf{\textcolor{jsDark}{LA BIBBIA}}}\\[0.5cm]
+                
+                {\fontsize{35}{45}\selectfont \textbf{\textcolor{black}{DI .....}}}\\[0.2cm]
+                {\fontsize{35}{45}\selectfont \textbf{\textcolor{black}{[Materia]}}}\\[1.5cm]
+                
+                % Linea divisoria Gialla (Centrata)
+                \textcolor{jsYellow}{\rule{10cm}{4pt}}\\[1cm]
+                
+                {\Large \textbf{#1}}\\[0.2cm]
+                {\large \textit{#2}}\\[1.5cm]
+                
+                {\large Docenti titolari:}\\[0.2cm]
+                {\Large \textbf{[Nome Docente]}}\\[2cm]
+                
+                \textbf{\large Autore del riassunto:}\\
+                {\large [Tuo Nome]}\\[2cm]
+                
+                \vfill
+                {\large \textbf{Anno Accademico 2025 - 2026}}
+            
+        };
+        
+        % Badge (Opzionale)
+        \node[anchor=south east] at ($(current page.south east) + (-2cm, 2cm)$) {
+            \tikz\draw[fill=jsYellow, draw=none] (0,0) rectangle (2,2) node[midway, black, font=\bfseries\huge] {JS};
+        };
+
+    \end{tikzpicture}
+    \end{titlepage}
+    \clearpage
+}
+
+% --- Box per il Codice e Note (tcolorbox) ---
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage{titlesec} % Per colorare i titoli
+
+% Setup Titoli Arancioni
+\titleformat{\section}
+{\color{mainOrange}\normalfont\Large\bfseries}
+{\color{mainOrange}\thesection}{1em}{}[\color{mainOrange}\hrule height 1pt]
+
+\titleformat{\subsection}
+{\color{mainOrange}\normalfont\large\bfseries}
+{\color{mainOrange}\thesubsection}{1em}{}
+
+% Stile per il codice JS
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, const, let},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this, console, log, prompt, alert},
+  ndkeywordstyle=\color{teal}\bfseries,
+  identifierstyle=\color{black}, 
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{green!50!black}\ttfamily,
+  stringstyle=\color{red!60!black}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+% Box Codice
+\newtcblisting{jsbox}[1][]{
+  colback=codeBg,
+  colframe=gray!50,
+  listing only,
+  listing options={
+    language=JavaScript,
+    basicstyle=\ttfamily\small, % Testo nero di default
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    breaklines=true,
+    columns=fullflexible
+  },
+  title={\textbf{Codice}},
+  coltitle=black,
+  fonttitle=\bfseries\ttfamily,
+  enhanced,
+  attach boxed title to top right={yshift=-3mm, xshift=-3mm},
+  boxed title style={colback=jsYellow},
+  #1
+}
+
+% Box Funzioni Viola
+\newtcblisting{funcbox}[1][]{
+  colback=violet!5,        % Sfondo Viola chiarissimo
+  colframe=violet!75,      % Bordo Viola
+  listing only,
+  listing options={
+    language=JavaScript,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    breaklines=true,
+    columns=fullflexible
+  },
+  title={\textbf{Funzione: #1}},
+  coltitle=white,
+  fonttitle=\bfseries\ttfamily,
+  enhanced,
+  attach boxed title to top left={yshift=-3mm, xshift=3mm},
+  boxed title style={colback=violet}, 
+  drop shadow,
+  #1
+}
+
+% Box Concetti/Note
+\newtcolorbox{concept}[1]{
+  colback=niceBlue!5,
+  colframe=niceBlue,
+  title={#1},
+  fonttitle=\bfseries,
+  sharp corners=downhill,
+  enhanced,
+  drop shadow
+}
+
+\begin{document}
+
+% Copertina Template
+\customcover{Sottotitolo del Corso}{Argomenti Principali}
+
+\tableofcontents
+\newpage
+
+\section{Template: Guida agli Stili e Box}
+Questa sezione serve come riferimento per tutti gli elementi grafici e strutturali disponibili in questo progetto LaTeX. Copia e incolla da qui per mantenere la consistenza.
+
+\subsection{1. Box per il Codice}
+Utilizzare principalmente \texttt{jsbox} per snippet generici e \texttt{funcbox} per definizioni di funzioni importanti.
+
+\subsubsection{JS Code Box (Standard)}
+\begin{jsbox}
+// Esempio di codice generico
+const x = 10;
+if (x > 5) {
+    console.log("X è grande!");
+}
+\end{jsbox}
+
+\subsubsection{Function Box (Per Funzioni)}
+\begin{funcbox}[nomeFunzione]
+function nomeFunzione(param) {
+    // Logica della funzione
+    return param * 2;
+}
+\end{funcbox}
+
+\subsection{2. Concetti e Definizioni}
+Per definizioni teoriche, regole o concetti chiave, usare l'ambiente \texttt{concept}.
+
+\begin{concept}{Titolo del Concetto}
+Spiegazione teorica del concetto. Qui puoi scrivere testo normale, formule matematiche ($f(x) = x^2$) e enfatizzare parole in \textbf{grassetto}.
+\end{concept}
+
+\subsection{3. Liste e Elenchi}
+\subsubsection{Lista Puntata (Itemize)}
+\begin{itemize}
+    \item Primo punto.
+    \item Secondo punto.
+    \begin{itemize}
+        \item Sotto-punto.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Lista Numerata (Enumerate)}
+\begin{enumerate}
+    \item Passo 1.
+    \item Passo 2.
+\end{enumerate}
+
+\subsection{4. Tabelle}
+Usare \texttt{tabular} all'interno di un ambiente \texttt{center}.
+
+\begin{center}
+\begin{tabular}{|l|c|r|}
+\hline
+\textbf{Sinistra} & \textbf{Centro} & \textbf{Destra} \\
+\hline
+Testo 1 & 123 & ABC \\
+\hline
+Testo 2 & 456 & XYZ \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{5. Immagini e Placeholder}
+Esempio di placeholder creato con TikZ (utile se manca l'immagine png/jpg).
+
+\begin{figure}[h!]
+    \centering
+    % Esempio con immagine reale (caricata in img/ricorrenza.png)
+    \includegraphics[width=0.9\linewidth]{img/ricorrenza.png}
+    \caption{Esempio Immagine: Albero di Ricorrenza}
+\end{figure}
+
+\end{document}

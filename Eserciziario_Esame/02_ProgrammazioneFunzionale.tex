@@ -1,0 +1,163 @@
+\section{Capitolo 2: Funzioni e Programmazione Funzionale}
+
+\begin{esercizio}{Es. 5: Pipeline di Composizione}
+\textbf{TRACCIA:} Scrivere una funzione `pipeline(funzioni)` che accetta un array di funzioni $[f_1, f_2, \dots, f_n]$ e restituisce una nuova funzione che applica le $f$ in sequenza all'input.
+$result = f_n(\dots f_2(f_1(x))\dots)$
+
+\textbf{Esempio:} `[x => x+1, x => x*2]` $\to$ Input 5 $\to$ (5+1)=6 $\to$ 6*2=12.
+\end{esercizio}
+
+\begin{jsbox}
+function pipeline(funzioni) {
+    return function(input) {
+        let valore = input;
+        for (let f of funzioni) {
+            valore = f(valore); // Passo il risultato alla prossima
+        }
+        return valore;
+    };
+}
+// Equivalente con reduce:
+// const pipeline = fs => x => fs.reduce((acc, f) => f(acc), x);
+\end{jsbox}
+
+\begin{esercizio}{Es. 6: Filtro Asimmetrico (HOF)}
+\textbf{TRACCIA:} Scrivere `partition(arr, predicato)` che restituisce un oggetto `{ pass: [...], fail: [...] }`.
+In `pass` vanno gli elementi per cui il predicato è true, in `fail` gli altri.
+
+\textbf{Vincolo:} Scorrere l'array una sola volta.
+\end{esercizio}
+
+\begin{jsbox}
+function partition(arr, predicato) {
+    let result = { pass: [], fail: [] };
+    
+    for (let el of arr) {
+        if (predicato(el)) {
+            result.pass.push(el);
+        } else {
+            result.fail.push(el);
+        }
+    }
+    return result;
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 7: Generatore di Contatori (Closure)}
+\textbf{TRACCIA:} Scrivere `creaContatori(n)` che restituisce un array di `n` funzioni.
+La funzione all'indice `i` deve ritornare `i` quando chiamata.
+\textit{Attenzione all'errore classico del `var` nei cicli!}
+\end{esercizio}
+
+\begin{jsbox}
+function creaContatori(n) {
+    let funzioni = [];
+    
+    for (let i = 0; i < n; i++) {
+        // Usando 'let' nel ciclo, creiamo uno scope per ogni iterazione.
+        // La closure cattura la 'i' corretta.
+        funzioni.push(function() {
+            return i;
+        });
+    }
+    return funzioni;
+}
+
+// Se usassimo 'var i', tutte ritornerebbero n!
+\end{jsbox}
+
+\begin{esercizio}{Es. 8: Map su Albero (Tree Map)}
+\textbf{TRACCIA:} Scrivere una funzione ricorsiva `alberoMap(nodo, f)` che restituisce un \textbf{nuovo} albero strutturalmente identico, ma dove ogni valore `val` è trasformato dalla funzione `f`.
+\end{esercizio}
+
+\begin{jsbox}
+function alberoMap(nodo, f) {
+    if (!nodo) return null;
+    
+    return {
+        val: f(nodo.val),           // Trasformo il valore
+        sx: alberoMap(nodo.sx, f),  // Ricorro a sinistra
+        dx: alberoMap(nodo.dx, f)   // Ricorro a destra
+    };
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 20: Memoization (Cache Semplice)}
+\textbf{TRACCIA:} Scrivere una funzione `memoize(f)` che accetta una funzione (che prende 1 argomento stringa/numero) e ne restituisce una versione "con memoria". Se richiamata con lo stesso input, non ricalcola ma restituisce il valore salvato.
+\end{esercizio}
+
+\begin{jsbox}
+function memoize(f) {
+    let cache = {}; // La chiusura protegge la cache
+    
+    return function(n) {
+        if (n in cache) {
+            return cache[n]; // HIT
+        } else {
+            let result = f(n); // MISS - Calcolo
+            cache[n] = result;
+            return result;
+        }
+    };
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 21: Currying (Somma a Catena)}
+\textbf{TRACCIA:} Scrivere una funzione `somma(a)` che può essere chiamata così: `somma(2)(3)(4)` e restituisce la somma finale (es. supportando 3 chiamate fisse o tornando un oggetto con `valueOf`).
+\textit{Versione Semplice (3 argomenti fissi):}
+\end{esercizio}
+
+\begin{jsbox}
+function somma(a) {
+    return function(b) {
+        return function(c) {
+            return a + b + c;
+        };
+    };
+}
+// somma(1)(2)(3) -> 6
+\end{jsbox}
+
+\begin{esercizio}{Es. 22: Implementazione Manuale di 'Every'}
+\textbf{TRACCIA:} Scrivere `myEvery(arr, predicato)` che torna true se \textbf{TUTTI} gli elementi soddisfano il predicato.
+\textit{Appena ne trovi uno falso, devi fermarti (short-circuit).}
+\end{esercizio}
+
+\begin{jsbox}
+function myEvery(arr, predicato) {
+    for (let el of arr) {
+        if (!predicato(el)) {
+            return false; // Trovato un contromodello
+        }
+    }
+    return true; // Nessuno ha fallito
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 47: Map tramite Reduce}
+\textbf{TRACCIA:} Implementare `myMap(arr, f)` usando \textbf{solo} `reduce`.
+\end{esercizio}
+
+\begin{jsbox}
+function myMap(arr, f) {
+    return arr.reduce((acc, el) => {
+        acc.push(f(el));
+        return acc; // Ricorda di ritornare l'accumulatore!
+    }, []); // Valore iniziale array vuoto
+}
+\end{jsbox}
+
+\begin{esercizio}{Es. 48: Filter tramite Reduce}
+\textbf{TRACCIA:} Implementare `myFilter(arr, pred)` usando \textbf{solo} `reduce`.
+\end{esercizio}
+
+\begin{jsbox}
+function myFilter(arr, predicato) {
+    return arr.reduce((acc, el) => {
+        if (predicato(el)) {
+            acc.push(el);
+        }
+        return acc;
+    }, []);
+}
+\end{jsbox}

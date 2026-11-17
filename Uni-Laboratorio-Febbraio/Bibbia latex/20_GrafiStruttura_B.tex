@@ -1,0 +1,49 @@
+\section{Grafi: Struttura (Lab 20)}
+
+\subsection{Cos'è un Grafo?}
+Un Grafo è un insieme di punti (**Nodi** o Vertici) collegati da linee (**Archi** o Edges).
+\begin{itemize}
+    \item **Orientato:** Le linee sono frecce (A va a B, ma non viceversa).
+    \item **Non Orientato:** Le linee sono strade a doppio senso (A è collegato a B).
+\end{itemize}
+
+\begin{verbatim}
+    (A) -----> (B)
+     |          |
+     v          v
+    (C) <----- (D)
+\end{verbatim}
+
+\subsection{Come salvarlo in memoria?}
+\begin{concept}{Lista di Adiacenza}
+Il modo migliore in JavaScript è usare una \textbf{Mappa} dove:
+Chiave = Il Nodo, Valore = Lista dei vicini (Array).
+\end{concept}
+\begin{jsbox}
+class Graph {
+    constructor() {
+        this.adjList = new Map();
+    }
+
+    addNode(nodo) {
+        if (!this.adjList.has(nodo)) {
+            this.adjList.set(nodo, []); // Creo lista vuota
+        }
+    }
+
+    addEdge(partenza, arrivo) {
+        this.addNode(partenza);
+        this.addNode(arrivo);
+        
+        // Aggiungo il collegamento
+        this.adjList.get(partenza).push(arrivo);
+        
+        // Se fosse NON orientato, dovrei aggiungere anche il viceversa:
+        // this.adjList.get(arrivo).push(partenza);
+    }
+}
+
+let g = new Graph();
+g.addEdge("A", "B"); // A -> B
+g.addEdge("A", "C"); // A -> C
+\end{jsbox}

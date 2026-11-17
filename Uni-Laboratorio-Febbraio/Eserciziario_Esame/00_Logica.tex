@@ -1,0 +1,104 @@
+\section{Capitolo 0: Dal Testo alla Logica}
+
+In questo capitolo preliminare, impariamo a decifrare il "linguaggio da esame". Spesso la difficoltà non è scrivere il codice, ma capire \textit{esattamente} cosa viene chiesto.
+Usiamo il \textbf{Dizionario Tecnico} per tradurre le parole chiave in codice.
+
+\subsection{1. Il Glossario delle Strutture Dati}
+
+\begin{dizionario}{Array Annidato (Nested)}
+\textbf{Definizione:} Un array che contiene al suo interno altri array.
+\textbf{Esempio:} \texttt{[1, [2, 3], 4]}.
+\textbf{Cosa Significa nel Codice:} Probabilmente dovrai usare la \textbf{ricorsione} (vedi `flat` o `partition`) o doppi cicli.
+\end{dizionario}
+
+\begin{dizionario}{Insieme (Set) implementato come Oggetto}
+\textbf{Definizione:} Un oggetto dove la chiave è l'elemento e il valore è \texttt{true}.
+\textbf{Codice:} \texttt{\{ "mela": true, "pera": true \}}.
+\textbf{Perché?} Per avere un accesso veloce $O(1)$ invece di cercare nell'array $O(n)$.
+\end{dizionario}
+
+\begin{dizionario}{Multi-insieme}
+\textbf{Definizione:} Come un Set, ma contiamo quante volte appare un elemento.
+\textbf{Codice:} \texttt{\{ "mela": 2, "pera": 1 \}}.
+\textbf{Pattern Tipico:} \texttt{if (k in obj) obj[k]++; else obj[k] = 1;}
+\end{dizionario}
+
+\subsection{2. Il Glossario per le Funzioni}
+
+\begin{dizionario}{Predicato}
+\textbf{Definizione:} Una funzione che restituisce \textbf{sempre e solo} \texttt{boolean}.
+\textbf{Firma:} \texttt{f: (x: T) => boolean}
+\textbf{Esempio:} \texttt{isPari(x)}, \texttt{isMaggiorenne(user)}.
+\end{dizionario}
+
+\begin{dizionario}{Funzione Fabbrica (Factory)}
+\textbf{Definizione:} Una funzione che \textbf{crea e restituisce} una nuova funzione.
+\textbf{Concetto Chiave:} \textbf{Closure}. La funzione restituita "ricorda" i parametri della fabbrica.
+\end{dizionario}
+
+\begin{dizionario}{In-Place (Side Effect)}
+\textbf{Definizione:} Modificare direttamente l'oggetto/array passato come argomento, SENZA crearne uno nuovo.
+\textbf{Attenzione:} Se il testo dice "senza side-effect" o "funzionale pura", devi clonare l'input prima di toccarlo!
+\end{dizionario}
+
+\subsection{Esercizi di "Traduzione"}
+
+\begin{esercizio}{Traduzione 1: La "Fabbrica di Predicati"}
+\textbf{TESTO:} "Scrivere una funzione `createFilter` che accetta un numero `soglia` e restituisce un predicato che vale true se l'input è maggiore della soglia."
+
+\textbf{ANALISI:}
+1. \textit{Scrivere una funzione `createFilter` che accetta `soglia`}: \texttt{function createFilter(soglia) \{ ... \}}
+2. \textit{Restituisce un predicato}: Deve fare \texttt{return function(x) \{ ... \}}
+3. \textit{Vale true se input > soglia}: \texttt{return x > soglia}
+
+\end{esercizio}
+
+\begin{jsbox}
+function createFilter(soglia) {
+    // Ritorna una funzione (Closure) che ricorda 'soglia'
+    return function(valoreInput) {
+        return valoreInput > soglia; // Ritorna boolean (Predicato)
+    };
+}
+
+const filtroMaggiorenni = createFilter(18);
+console.log(filtroMaggiorenni(20)); // true
+\end{jsbox}
+
+\begin{esercizio}{Traduzione 2: "Senza Funzioni di Libreria"}
+\textbf{TESTO:} "Calcolare l'intersezione tra due array A e B senza usare `Set`, `filter` o `includes`."
+
+\textbf{ANALISI:}
+1. \textit{Intersezione}: Elementi comuni.
+2. \textit{Senza `includes`}: Devi farti un doppio ciclo for a mano o usare un oggetto di appoggio (Dictionary) per la velocità.
+\end{esercizio}
+
+\begin{jsbox}
+function intersezioneManuale(A, B) {
+    let result = [];
+    // Strategia Dizionario per efficienza
+    let mappaA = {};
+    
+    // 1. Popolo il dizionario con gli elementi di A
+    for (let i = 0; i < A.length; i++) {
+        mappaA[A[i]] = true;
+    }
+    
+    // 2. Controllo se gli elementi di B sono nel dizionario
+    for (let j = 0; j < B.length; j++) {
+        let val = B[j];
+        if (mappaA[val]) { // Equivale a A.includes(val)
+            result.push(val);
+        }
+    }
+    return result;
+}
+\end{jsbox}
+
+\subsection{Tabella Rapida Concetti Matematici}
+\begin{enumerate}
+    \item \textbf{Suriettiva:} Copre tutto il codominio.
+    \item \textbf{Iniettiva:} Nessuna collisione (input diversi $\to$ output diversi).
+    \item \textbf{Invertibile:} Biunivoca (1-a-1 perfetto).
+    \item \textbf{Punto Fisso:} Quando $f(x) = x$.
+\end{enumerate}

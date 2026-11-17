@@ -1,0 +1,39 @@
+\section{Composizione di Funzioni e Callback (Lez. 10)}
+
+\subsection{Comporre le Funzioni}
+In programmazione, spesso si usa l'output di una funzione come input per un'altra. Questo si chiama \textbf{composizione}.
+
+\begin{concept}{Matrioska di Funzioni}
+In programmazione, spesso si usa l'output di una funzione come input per un'altra. Questo si chiama \textbf{composizione}.
+$f(g(x))$ in matematica.
+\end{concept}
+\begin{jsbox}
+function raddoppia(x) { return x * 2; }
+function quadrato(x) { return x * x; }
+
+// Composizione manuale: prima il quadrato, poi raddoppio
+let risultato = raddoppia(quadrato(3)); 
+// Passo 1: 3 * 3 = 9
+// Passo 2: 9 * 2 = 18
+console.log(risultato); // 18
+\end{jsbox}
+
+\subsection{Funzioni che ritornano Funzioni (Function Factory)}
+\begin{concept}{Fabbrica di Funzioni}
+Possiamo scrivere funzioni che \textit{creano} nuove funzioni personalizzate, "congelando" alcuni parametri (Closure).
+\end{concept}
+\begin{jsbox}
+function creaPolinomio(a, b, c) {
+    // Ritorna una NUOVA funzione che accetta solo x
+    return function(x) {
+        return (a * x * x) + (b * x) + c;
+    }
+}
+
+// Creo una funzione specifica: 2x^2 + x + 0
+let miaEquazione = creaPolinomio(2, 1, 0);
+
+// Ora la uso solo con x
+console.log(miaEquazione(3)); // (2*9) + 3 + 0 = 21
+console.log(miaEquazione(10)); // (2*100) + 10 + 0 = 210
+\end{jsbox}

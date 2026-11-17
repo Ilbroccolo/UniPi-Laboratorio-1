@@ -1,0 +1,36 @@
+// 1. COPIA E ORDINA (Senza modificare l'originale)
+// Spread operator [...] crea una copia, poi sort() ordina quella.
+let copiaOrdinata = [...originale].sort((a,b) => a - b);
+
+// 2. RIMUOVI DUPLICATI
+let unici = [...new Set([1, 2, 2, 1])]; // [1, 2]
+
+// 3. DEEP COPY (Clonare Oggetti Semplici)
+let clone = JSON.parse(JSON.stringify(oggetto));
+
+// 4. CICLO AL CONTRARIO (Utile per rimuovere elementi)
+for (let i = arr.length - 1; i >= 0; i--) {
+   if (arr[i] < 0) arr.splice(i, 1);
+}
+
+// 5. FREQUENCY MAP (Conteggio Elementi)
+const freq = {};
+for (const x of arr) { freq[x] = (freq[x] || 0) + 1; }
+
+// 6. MATRICE NxM (Safe Initialization)
+// Evita che tutte le righe puntino allo stesso array!
+const matrix = Array.from({ length: N }, () => Array(M).fill(0));
+
+// 7. MEMOIZATION (Caching Recursion)
+const memo = {};
+function fib(n) {
+    if (n in memo) return memo[n];
+    if (n <= 1) return n;
+    return memo[n] = fib(n-1) + fib(n-2);
+}
+
+// 8. DEEP CLONE (Moderno)
+const copy = structuredClone(original);
+
+// 9. FLATTEN (Appiattire Array)
+const flat = [1, [2, [3]]].flat(Infinity); // [1, 2, 3]
